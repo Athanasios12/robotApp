@@ -18,6 +18,7 @@ public:
 private:
     void appendDialogWindow(const QString &text);
     void setCbOptions();
+    bool startSerialComm();
 
 private slots:
     void on_pbSendData_clicked();
