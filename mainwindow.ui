@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Start Data Read</string>
+     <string>Start Communication</string>
     </property>
    </widget>
    <widget class="QPushButton" name="StopDataRead">
@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stop Data Read</string>
+     <string>Stop Communication</string>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
@@ -178,7 +178,9 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
    </widget>
-   <zorder>layoutWidget</zorder>
+   <zorder>pbSendData</zorder>
+   <zorder>label_7</zorder>
+   <zorder>etTransferData</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>pbStartDataRead</zorder>

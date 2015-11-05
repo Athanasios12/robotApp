@@ -16,10 +16,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    serialcommhandler.cpp
+    serialcommhandler.cpp \
+    serialthread.cpp
 
 HEADERS  += \
     mainwindow.h \
-    serialcommhandler.h
+    serialcommhandler.h \
+    serialthread.h
 
 FORMS    += mainwindow.ui

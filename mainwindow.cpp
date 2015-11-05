@@ -20,6 +20,12 @@ MainWindow::MainWindow(QWidget *parent) :
             //initialize combo
             ui->cbPortComm->addItem(port);
         }
+        //create serial thread and connect signals and slots
+        serialThread = new SerialThread(this, &spiHandler);
+        //serial thread emits signal when received data form serial port
+        connect(serialThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
+        //main thread emits signal when push_button send clicked and communication is established
+        connect(this, SIGNAL(writeData(QByteArray)), serialThread, SLOT(sendData(QByteArray)));
     }
 }
 
@@ -88,6 +94,7 @@ bool MainWindow::startSerialComm()
         appendDialogWindow("Connection Error, couldn't open port\n");
         return false;
     }
+    serialThread->run();
     return true;
 }
 
@@ -97,12 +104,12 @@ void MainWindow::on_pbSendData_clicked()
     bool isConnected = spiHandler.isSerialOpened();
     if(!spiHandler.isSerialOpened())
     {
-        isConnected = startSerialComm();
+        appendDialogWindow("Connection Error, start communication before sending data!\n");
     }
     if(isConnected)
     {
         QByteArray data(ui->etTransferData->toPlainText().toStdString().c_str());
-        spiHandler.writeToSerialDevice(data);
+        emit writeData(data);
     }
 }
 
@@ -113,27 +120,21 @@ void MainWindow::on_pbStartDataRead_clicked()
     {
         isConnected = startSerialComm();
     }
-    if(isConnected)
-    {
-        QByteArray data;
-        if(!spiHandler.readFromSerialDevice(data))
-        {
-            appendDialogWindow("Data read error\n");
-        }else
-        {
-            appendDialogWindow(QString(data));
-        }
-    }
 }
 
 void MainWindow::on_StopDataRead_clicked()
 {
     if(spiHandler.isSerialOpened())
     {
+        serialThread->Stop = true;
         spiHandler.disconnectSerialDevice();
     }
 }
 
-//Edit Text and text widget slots
-
+void MainWindow::on_receivedData(const QByteArray &data)
+{
+    appendDialogWindow("Received data: ");
+    appendDialogWindow(QString(data));
+    appendDialogWindow("\n");
+}
 
