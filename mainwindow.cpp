@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMutex>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     QVector<QString> commList;
-
     if(!spiHandler.getAvaliablePorts(commList))
     {
         appendDialogWindow("No Comm Ports Available");
@@ -40,10 +40,19 @@ void MainWindow::appendDialogWindow(const QString &text)
                                      text);
 }
 
+void MainWindow::removeAllItems()
+{
+    ui->cbDataBits->clear();
+    ui->cbParityBit->clear();
+    ui->cbFlowControl->clear();
+    ui->cbStopBit->clear();
+    ui->cbBaudRate->clear();
+}
+
 //ComboBox slots
 void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
 {
-    appendDialogWindow("Selected Port :" + port + "\n");
+    removeAllItems();
     //fill other comboBoxes with connection properietes
     QVector<qint32> baudList;
     if(!spiHandler.getAvailableBaudRates(port, baudList))
@@ -84,7 +93,7 @@ void MainWindow::setCbOptions()
 
 bool MainWindow::startSerialComm()
 {
-    if(!spiHandler.openCommPort(ui->cbPortComm->currentData().value<QString>(),
+    if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
                             ui->cbBaudRate->currentData().value<qint32>(),
                             ui->cbDataBits->currentText(),
                             ui->cbParityBit->currentText(),
@@ -94,7 +103,7 @@ bool MainWindow::startSerialComm()
         appendDialogWindow("Connection Error, couldn't open port\n");
         return false;
     }
-    serialThread->run();
+    serialThread->start();
     return true;
 }
 
@@ -115,10 +124,17 @@ void MainWindow::on_pbSendData_clicked()
 
 void MainWindow::on_pbStartDataRead_clicked()
 {
-    bool isConnected = spiHandler.isSerialOpened();
     if(!spiHandler.isSerialOpened())
     {
-        isConnected = startSerialComm();
+        if(startSerialComm())
+        {
+            appendDialogWindow("Connected to port :" +
+                               ui->cbPortComm->currentText() + "\n");
+        }else
+        {
+            appendDialogWindow("Error, couldn't connect to port :" +
+                               ui->cbPortComm->currentText() + "\n");
+        }
     }
 }
 

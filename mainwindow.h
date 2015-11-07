@@ -20,6 +20,7 @@ private:
     void appendDialogWindow(const QString &text);
     void setCbOptions();
     bool startSerialComm();
+    void removeAllItems();
 
 signals:
     void writeData(QByteArray);
@@ -32,6 +33,7 @@ private slots:
     void on_StopDataRead_clicked();
 
     void on_cbPortComm_currentIndexChanged(const QString &port);
+
 
 public slots:
     void on_receivedData(const QByteArray &data);
