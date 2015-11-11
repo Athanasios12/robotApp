@@ -195,6 +195,12 @@ p, li { white-space: pre-wrap; }
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuK">
+    <property name="title">
+     <string>Serial Port</string>
+    </property>
+   </widget>
+   <addaction name="menuK"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

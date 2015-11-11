@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMutex>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -152,5 +153,6 @@ void MainWindow::on_receivedData(const QByteArray &data)
     appendDialogWindow("Received data: ");
     appendDialogWindow(QString(data));
     appendDialogWindow("\n");
+    qDebug() << data << "\n";
 }
 

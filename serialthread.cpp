@@ -16,6 +16,7 @@ void SerialThread::run()
     {
         Stop = false;
         QMutex mutex;
+        QByteArray totalData;
         while(!Stop)
         {
             mutex.lock();
@@ -25,9 +26,14 @@ void SerialThread::run()
                 serialPtr->writeToSerialDevice(*dataPtr);
             }
             QByteArray readData;
-            if(serialPtr->readFromSerialDevice(readData))
+            totalData.clear();
+            while(serialPtr->readFromSerialDevice(readData))
             {
-                emit receivedData(readData);
+                totalData += readData;
+            }
+            if(!totalData.isEmpty())
+            {
+                emit receivedData(totalData);
             }
             mutex.unlock();
         }
@@ -37,6 +43,6 @@ void SerialThread::run()
 void SerialThread::sendData(const QByteArray &data)
 {
     dataSend = true;
-    dataPtr = &data;
+    dataPtr = new QByteArray(data);
 }
 
