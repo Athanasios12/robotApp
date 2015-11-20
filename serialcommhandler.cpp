@@ -9,7 +9,10 @@ SerialCommHandler::SerialCommHandler()
 
 SerialCommHandler::~SerialCommHandler()
 {
-    serial.close();
+    if(serial.isOpen())
+    {
+        serial.close();
+    }
 }
 
 bool SerialCommHandler::getAvaliablePorts(QVector<QString> &ports) const
@@ -40,11 +43,11 @@ bool SerialCommHandler::getAvailableBaudRates(const QString &portName,
 
 bool SerialCommHandler::openCommPort(const QString &portName,
                                      const qint32 baud,
-                                     const QSerialPort::DataBits dataBits,
-                                     const QSerialPort::Parity parity,
-                                     const QSerialPort::StopBits stopBit,
-                                     const QSerialPort::FlowControl flow)
-                {
+                                     const QString &dataBits,
+                                     const QString &parity,
+                                     const QString &stopBit,
+                                     const QString &flow)
+{
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
         if(portName == info.portName())
@@ -52,7 +55,12 @@ bool SerialCommHandler::openCommPort(const QString &portName,
             serial.setPort(info);
             if (serial.open(QIODevice::ReadWrite))
             {
-                if(setSerialCommParams(baud, dataBits, parity, stopBit, flow))
+                connected = true;
+                QSerialPort::DataBits eDataBits = dataBitsFromString(dataBits);
+                QSerialPort::Parity eParity = parityFromString(parity);
+                QSerialPort::StopBits eStopBit = stopBitFromString(stopBit);
+                QSerialPort::FlowControl eFlow = flowFromString(flow);
+                if(setSerialCommParams(baud, eDataBits, eParity, eStopBit, eFlow))
                 {
                     return true;
                 }
@@ -61,14 +69,73 @@ bool SerialCommHandler::openCommPort(const QString &portName,
         }
     }
     return false;
-
 }
 
-
-
-inline void SerialCommHandler::disconnectSerialDevice()
+bool SerialCommHandler::isSerialOpened()
 {
-    serial.close();
+    return serial.isOpen();
+}
+
+QSerialPort::DataBits SerialCommHandler::dataBitsFromString(const QString &dataBits)
+{
+    if(dataBits == "5"){
+        return QSerialPort::Data5;
+    }else if(dataBits == "6"){
+        return QSerialPort::Data6;
+    }else if(dataBits == "7"){
+        return QSerialPort::Data7;
+    }else if(dataBits == "8"){
+        return QSerialPort::Data8;
+    }
+    return QSerialPort::UnknownDataBits;
+}
+
+QSerialPort::Parity SerialCommHandler::parityFromString(const QString &parity)
+{
+    if(parity == "NoParity"){
+        return QSerialPort::NoParity;
+    }else if(parity == "EvenParity"){
+        return QSerialPort::EvenParity;
+    }else if(parity == "OddParity"){
+        return QSerialPort::OddParity;
+    }else if(parity == "SpaceParity"){
+        return QSerialPort::SpaceParity;
+    }else if(parity == "MarkParity"){
+        return QSerialPort::MarkParity;
+    }
+    return QSerialPort::UnknownParity;
+}
+
+QSerialPort::StopBits SerialCommHandler::stopBitFromString(const QString &stopBit)
+{
+    if(stopBit == "OneStop"){
+        return QSerialPort::OneStop;
+    }else if(stopBit == "OneAndHalfStop"){
+        return QSerialPort::OneAndHalfStop;
+    }else if(stopBit == "TwoStop"){
+        return QSerialPort::TwoStop;
+    }
+    return QSerialPort::UnknownStopBits;
+}
+
+QSerialPort::FlowControl SerialCommHandler::flowFromString(const QString &flow)
+{
+    if(flow == "NoFlowControl"){
+        return QSerialPort::NoFlowControl;
+    }else if(flow == "HardwareControl"){
+        return QSerialPort::HardwareControl;
+    }else if(flow == "SoftwareControl"){
+        return QSerialPort::SoftwareControl;
+    }
+    return QSerialPort::UnknownFlowControl;
+}
+
+void SerialCommHandler::disconnectSerialDevice()
+{
+    if(connected){
+        serial.close();
+        connected = false;
+    }
 }
 
 bool SerialCommHandler::writeToSerialDevice(const QByteArray &data)

@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += serialport
+CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,10 +16,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    serialcommhandler.cpp
+    serialcommhandler.cpp \
+    serialthread.cpp
 
 HEADERS  += \
     mainwindow.h \
-    serialcommhandler.h
+    serialcommhandler.h \
+    serialthread.h
 
 FORMS    += mainwindow.ui

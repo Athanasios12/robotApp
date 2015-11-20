@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMutex>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     QVector<QString> commList;
-
     if(!spiHandler.getAvaliablePorts(commList))
     {
         appendDialogWindow("No Comm Ports Available");
@@ -20,6 +21,12 @@ MainWindow::MainWindow(QWidget *parent) :
             //initialize combo
             ui->cbPortComm->addItem(port);
         }
+        //create serial thread and connect signals and slots
+        serialThread = new SerialThread(this, &spiHandler);
+        //serial thread emits signal when received data form serial port
+        connect(serialThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
+        //main thread emits signal when push_button send clicked and communication is established
+        connect(this, SIGNAL(writeData(QByteArray)), serialThread, SLOT(sendData(QByteArray)));
     }
 }
 
@@ -34,10 +41,19 @@ void MainWindow::appendDialogWindow(const QString &text)
                                      text);
 }
 
+void MainWindow::removeAllItems()
+{
+    ui->cbDataBits->clear();
+    ui->cbParityBit->clear();
+    ui->cbFlowControl->clear();
+    ui->cbStopBit->clear();
+    ui->cbBaudRate->clear();
+}
+
 //ComboBox slots
 void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
 {
-    appendDialogWindow("Selected Port :" + port + "\n");
+    removeAllItems();
     //fill other comboBoxes with connection properietes
     QVector<qint32> baudList;
     if(!spiHandler.getAvailableBaudRates(port, baudList))
@@ -47,7 +63,7 @@ void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
     {
         foreach(qint32 baud, baudList)
         {
-            ui->cbBaudRate->addItem(QString::number(baud));
+            ui->cbBaudRate->addItem(QString::number(baud), baud);
         }
         //fill other comboBoxes with possible properities
         setCbOptions();
@@ -56,54 +72,87 @@ void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
 
 void MainWindow::setCbOptions()
 {
-    QStringList dataBits;
-    dataBits << "5" << "6" << "7" << "8";
+    ui->cbDataBits->addItem("5");
+    ui->cbDataBits->addItem("6");
+    ui->cbDataBits->addItem("7");
+    ui->cbDataBits->addItem("8");
 
-    QStringList parity;
-    parity << "NoParity" << "EvenParity" << "OddParity"
-           << "SpaceParity" << "MarkParity";
+    ui->cbParityBit->addItem("NoParity");
+    ui->cbParityBit->addItem("EvenParity");
+    ui->cbParityBit->addItem("OddParity");
+    ui->cbParityBit->addItem("SpaceParity");
+    ui->cbParityBit->addItem("MarkParity");
 
-    QStringList flowControl;
-    flowControl << "NoFlowControl" << "HardwareControl" << "SoftwareControl" ;
+    ui->cbFlowControl->addItem("NoFlowControl");
+    ui->cbFlowControl->addItem("HardwareControl");
+    ui->cbFlowControl->addItem("SoftwareControl");
 
-    QStringList stopBits;
-    stopBits << "OneStop" << "OneAndHalfStop" << "TwoStop";
+    ui->cbStopBit->addItem("OneStop");
+    ui->cbStopBit->addItem("OneAndHalfStop");
+    ui->cbStopBit->addItem("TwoStop");
+}
 
-    foreach (const QString &val, dataBits)
+bool MainWindow::startSerialComm()
+{
+    if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
+                            ui->cbBaudRate->currentData().value<qint32>(),
+                            ui->cbDataBits->currentText(),
+                            ui->cbParityBit->currentText(),
+                            ui->cbStopBit->currentText(),
+                            ui->cbFlowControl->currentText()))
     {
-        ui->cbDataBits->addItem(val);
+        appendDialogWindow("Connection Error, couldn't open port\n");
+        return false;
     }
-    foreach (const QString &val, parity)
-    {
-       ui->cbParityBit->addItem(val);
-    }
-    foreach (const QString &val, flowControl)
-    {
-        ui->cbFlowControl->addItem(val);
-    }
-    foreach (const QString &val, stopBits)
-    {
-        ui->cbStopBit->addItem(val);
-    }
-
+    serialThread->start();
+    return true;
 }
 
 //Push Button slots
 void MainWindow::on_pbSendData_clicked()
 {
-
+    bool isConnected = spiHandler.isSerialOpened();
+    if(!spiHandler.isSerialOpened())
+    {
+        appendDialogWindow("Connection Error, start communication before sending data!\n");
+    }
+    if(isConnected)
+    {
+        QByteArray data(ui->etTransferData->toPlainText().toStdString().c_str());
+        emit writeData(data);
+    }
 }
 
 void MainWindow::on_pbStartDataRead_clicked()
 {
-
+    if(!spiHandler.isSerialOpened())
+    {
+        if(startSerialComm())
+        {
+            appendDialogWindow("Connected to port :" +
+                               ui->cbPortComm->currentText() + "\n");
+        }else
+        {
+            appendDialogWindow("Error, couldn't connect to port :" +
+                               ui->cbPortComm->currentText() + "\n");
+        }
+    }
 }
 
 void MainWindow::on_StopDataRead_clicked()
 {
-
+    if(spiHandler.isSerialOpened())
+    {
+        serialThread->Stop = true;
+        spiHandler.disconnectSerialDevice();
+    }
 }
 
-//Edit Text and text widget slots
-
+void MainWindow::on_receivedData(const QByteArray &data)
+{
+    appendDialogWindow("Received data: ");
+    appendDialogWindow(QString(data));
+    appendDialogWindow("\n");
+    qDebug() << data << "\n";
+}
 

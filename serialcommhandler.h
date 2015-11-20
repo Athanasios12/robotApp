@@ -35,11 +35,13 @@ public:
     /// \param flow - flow control
     bool openCommPort(const QString &portName,
                       const qint32 baud,
-                      const QSerialPort::DataBits dataBits,
-                      const QSerialPort::Parity parity,
-                      const QSerialPort::StopBits stopBit,
-                      const QSerialPort::FlowControl flow);
+                      const QString &dataBits,
+                      const QString &parity,
+                      const QString &stopBit,
+                      const QString &flow);
 
+    ///function checks if port is already opened
+    bool isSerialOpened();
 
     ///function to disconnect from serial device
     void disconnectSerialDevice();
@@ -53,7 +55,7 @@ public:
 private:
     /// private variable
     /// tells if serial connection is established
-    bool connected;
+    bool connected = false;
     /// class member QSerialport class
     /// interace for serial connection
     QSerialPort serial;
@@ -64,6 +66,13 @@ private:
                              const QSerialPort::Parity parity,
                              const QSerialPort::StopBits stopBit,
                              const QSerialPort::FlowControl flow);
+
+    ///From string functions get QSerialPort enum from passed string
+    QSerialPort::DataBits dataBitsFromString(const QString &dataBits);
+    QSerialPort::Parity parityFromString(const QString &parity);
+    QSerialPort::StopBits stopBitFromString(const QString &stopBit);
+    QSerialPort::FlowControl flowFromString(const QString &flow);
+
 
     SerialCommHandler( const SerialCommHandler& other ); // non construction-copyable
     SerialCommHandler& operator=( const SerialCommHandler& ); // non copyable
