@@ -1,21 +1,21 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef SERIALGUI_H
+#define SERIALGUI_H
 
 #include <QMainWindow>
 #include "SerialCommHandler.h"
 #include "serialthread.h"
 
 namespace Ui {
-class MainWindow;
+class SerialGui;
 }
 
-class MainWindow : public QMainWindow
+class SerialGui : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit SerialGui(QWidget *parent = 0);
+    ~SerialGui();
 private:
     void appendDialogWindow(const QString &text);
     void setCbOptions();
@@ -39,9 +39,9 @@ public slots:
     void on_receivedData(const QByteArray &data);
 
 private:
-    Ui::MainWindow *ui;
+    Ui::SerialGui *ui;
     SerialCommHandler spiHandler;
     SerialThread *serialThread;
 };
 
-#endif // MAINWINDOW_H
+#endif // SERIALGUI_H

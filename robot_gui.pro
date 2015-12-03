@@ -15,13 +15,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     serialcommhandler.cpp \
-    serialthread.cpp
+    serialthread.cpp \
+    SerialGui.cpp \
+    RobotCmdGui.cpp
 
 HEADERS  += \
-    mainwindow.h \
     serialcommhandler.h \
-    serialthread.h
+    serialthread.h \
+    SerialGui.h \
+    RobotCmdGui.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    SerialGui.ui \
+    RobotCmdGui.ui

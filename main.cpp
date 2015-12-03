@@ -1,11 +1,12 @@
-#include "mainwindow.h"
+#include "SerialGui.h"
+#include "RobotCmdGui.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    RobotCmdGui r;
+    r.show();
 
     return a.exec();
 }

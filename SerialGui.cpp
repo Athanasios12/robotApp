@@ -1,11 +1,11 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "SerialGui.h"
+#include "ui_SerialGui.h"
 #include <QMutex>
 #include <QDebug>
 
-MainWindow::MainWindow(QWidget *parent) :
+SerialGui::SerialGui(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::SerialGui)
 {
     ui->setupUi(this);
     QVector<QString> commList;
@@ -30,18 +30,18 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 }
 
-MainWindow::~MainWindow()
+SerialGui::~SerialGui()
 {
     delete ui;
 }
 
-void MainWindow::appendDialogWindow(const QString &text)
+void SerialGui::appendDialogWindow(const QString &text)
 {
     ui->txDialogWindow->setPlainText(ui->txDialogWindow->toPlainText() +
                                      text);
 }
 
-void MainWindow::removeAllItems()
+void SerialGui::removeAllItems()
 {
     ui->cbDataBits->clear();
     ui->cbParityBit->clear();
@@ -51,7 +51,7 @@ void MainWindow::removeAllItems()
 }
 
 //ComboBox slots
-void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
+void SerialGui::on_cbPortComm_currentIndexChanged(const QString &port)
 {
     removeAllItems();
     //fill other comboBoxes with connection properietes
@@ -70,7 +70,7 @@ void MainWindow::on_cbPortComm_currentIndexChanged(const QString &port)
     }
 }
 
-void MainWindow::setCbOptions()
+void SerialGui::setCbOptions()
 {
     ui->cbDataBits->addItem("5");
     ui->cbDataBits->addItem("6");
@@ -92,7 +92,7 @@ void MainWindow::setCbOptions()
     ui->cbStopBit->addItem("TwoStop");
 }
 
-bool MainWindow::startSerialComm()
+bool SerialGui::startSerialComm()
 {
     if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
                             ui->cbBaudRate->currentData().value<qint32>(),
@@ -109,7 +109,7 @@ bool MainWindow::startSerialComm()
 }
 
 //Push Button slots
-void MainWindow::on_pbSendData_clicked()
+void SerialGui::on_pbSendData_clicked()
 {
     bool isConnected = spiHandler.isSerialOpened();
     if(!spiHandler.isSerialOpened())
@@ -123,7 +123,7 @@ void MainWindow::on_pbSendData_clicked()
     }
 }
 
-void MainWindow::on_pbStartDataRead_clicked()
+void SerialGui::on_pbStartDataRead_clicked()
 {
     if(!spiHandler.isSerialOpened())
     {
@@ -139,7 +139,7 @@ void MainWindow::on_pbStartDataRead_clicked()
     }
 }
 
-void MainWindow::on_StopDataRead_clicked()
+void SerialGui::on_StopDataRead_clicked()
 {
     if(spiHandler.isSerialOpened())
     {
@@ -148,7 +148,7 @@ void MainWindow::on_StopDataRead_clicked()
     }
 }
 
-void MainWindow::on_receivedData(const QByteArray &data)
+void SerialGui::on_receivedData(const QByteArray &data)
 {
     appendDialogWindow("Received data: ");
     appendDialogWindow(QString(data));
