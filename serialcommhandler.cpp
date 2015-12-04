@@ -62,6 +62,7 @@ bool SerialCommHandler::openCommPort(const QString &portName,
                 QSerialPort::FlowControl eFlow = flowFromString(flow);
                 if(setSerialCommParams(baud, eDataBits, eParity, eStopBit, eFlow))
                 {
+                    serial.setDataTerminalReady(true);
                     return true;
                 }
             }
