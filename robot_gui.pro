@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     serialcommhandler.cpp \
     serialthread.cpp \
     SerialGui.cpp \
-    RobotCmdGui.cpp
+    RobotCmdGui.cpp \
+    SerialBoostHandler.cpp
 
 HEADERS  += \
     serialcommhandler.h \
     serialthread.h \
     SerialGui.h \
-    RobotCmdGui.h
+    RobotCmdGui.h \
+    SerialBoostHandler.h
 
 
 INCLUDEPATH += J:/Boost/boost_1_59_0
