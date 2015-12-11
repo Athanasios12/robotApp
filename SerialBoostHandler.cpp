@@ -14,6 +14,51 @@ SerialBoostHandler::~SerialBoostHandler()
 
 }
 
+boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flow)
+{
+    if(flow == "NoFlowControl"){
+        return QSerialPort::NoFlowControl;
+    }else if(flow == "HardwareControl"){
+        return QSerialPort::HardwareControl;
+    }else if(flow == "SoftwareControl"){
+        return QSerialPort::SoftwareControl;
+    }
+    return QSerialPort::UnknownFlowControl;
+}
+
+boost::asio::serial_port_base::stop_bits::type stopBitsFromStr(const QString &stopBits)
+{
+    if(stopBit == "OneStop"){
+        return QSerialPort::OneStop;
+    }else if(stopBit == "OneAndHalfStop"){
+        return QSerialPort::OneAndHalfStop;
+    }else if(stopBit == "TwoStop"){
+        return QSerialPort::TwoStop;
+    }
+    return QSerialPort::UnknownStopBits;
+}
+
+uint32_t dataBitsFromStr(const QString &dataBits)
+{
+    return
+}
+
+boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity)
+{
+    if(parity == "NoParity"){
+        return QSerialPort::NoParity;
+    }else if(parity == "EvenParity"){
+        return QSerialPort::EvenParity;
+    }else if(parity == "OddParity"){
+        return QSerialPort::OddParity;
+    }else if(parity == "SpaceParity"){
+        return QSerialPort::SpaceParity;
+    }else if(parity == "MarkParity"){
+        return QSerialPort::MarkParity;
+    }
+    return QSerialPort::UnknownParity;
+}
+
 void SerialBoostHandler::open_port(uint32_t baud_rate,
                boost::asio::serial_port_base::flow_control::type flow,
                boost::asio::serial_port_base::parity::type pair,

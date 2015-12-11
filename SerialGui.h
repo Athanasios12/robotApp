@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "SerialCommHandler.h"
+#include "SerialBoostHandler.h"
 #include "serialthread.h"
 
 namespace Ui {
@@ -41,6 +42,7 @@ public slots:
 private:
     Ui::SerialGui *ui;
     SerialCommHandler spiHandler;
+    SerialBoostHandler serialBoost;
     SerialThread *serialThread;
 };
 

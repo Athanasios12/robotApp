@@ -20,11 +20,12 @@ public:
 
     ~SerialBoostHandler();
 
-    void open_port(uint32_t baud_rate,
-                   boost::asio::serial_port_base::flow_control::type flow,
-                   boost::asio::serial_port_base::parity::type pair,
-                   uint8_t dataBits,
-                   boost::asio::serial_port_base::stop_bits::type stopBits,
+
+    void open_port(uint32_t baud,
+                   const QString &dataBits,
+                   const QString &parity,
+                   const QString &stopBit,
+                   const QString &flow,
                    size_t timeout);
 
     std::string read_line();
@@ -54,6 +55,11 @@ private :
 
     // Called when the timer's deadline expires.
     void time_out(const boost::system::error_code& error);
+
+    boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flow);
+    boost::asio::serial_port_base::stop_bits::type stopBitsFromStr(const QString &stopBits);
+    uint32_t dataBitsFromStr(const QString &dataBits);
+    boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity);
 
 };
 

@@ -28,8 +28,8 @@ HEADERS  += \
     SerialBoostHandler.h
 
 
-INCLUDEPATH += J:/Boost/boost_1_59_0
-LIBPATH     += J:\Boost\boost_1_59_0\stage\lib
+INCLUDEPATH += D:\boost_1_59_0
+LIBPATH     += D:\boost_1_59_0\stage\lib
 
 FORMS    += \
     SerialGui.ui \
