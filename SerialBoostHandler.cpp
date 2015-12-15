@@ -1,4 +1,5 @@
 #include "SerialBoostHandler.h"
+#include <QString>
 
 SerialBoostHandler::SerialBoostHandler(const std::string &portName):
 io(),
@@ -17,46 +18,42 @@ SerialBoostHandler::~SerialBoostHandler()
 boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flow)
 {
     if(flow == "NoFlowControl"){
-        return QSerialPort::NoFlowControl;
+        return boost::asio::serial_port_base::flow_control::none;
     }else if(flow == "HardwareControl"){
-        return QSerialPort::HardwareControl;
+        return boost::asio::serial_port_base::flow_control::hardware;
     }else if(flow == "SoftwareControl"){
-        return QSerialPort::SoftwareControl;
+        return boost::asio::serial_port_base::flow_control::software;
     }
-    return QSerialPort::UnknownFlowControl;
+    return boost::asio::serial_port_base::flow_control::none;
 }
 
 boost::asio::serial_port_base::stop_bits::type stopBitsFromStr(const QString &stopBits)
 {
     if(stopBit == "OneStop"){
-        return QSerialPort::OneStop;
+        return boost::asio::serial_port_base::stop_bits::one;
     }else if(stopBit == "OneAndHalfStop"){
-        return QSerialPort::OneAndHalfStop;
+        return boost::asio::serial_port_base::stop_bits::onepointfive;
     }else if(stopBit == "TwoStop"){
-        return QSerialPort::TwoStop;
+        return boost::asio::serial_port_base::stop_bits::two;
     }
-    return QSerialPort::UnknownStopBits;
+    return boost::asio::serial_port_base::stop_bits::one;
 }
 
-uint32_t dataBitsFromStr(const QString &dataBits)
+uint8_t dataBitsFromStr(const QString &dataBits)
 {
-    return
+   return dataBits.toUtf8().constData();
 }
 
 boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity)
 {
     if(parity == "NoParity"){
-        return QSerialPort::NoParity;
+        return boost::asio::serial_port_base::parity::none;
     }else if(parity == "EvenParity"){
-        return QSerialPort::EvenParity;
+        return boost::asio::serial_port_base::parity::even;
     }else if(parity == "OddParity"){
-        return QSerialPort::OddParity;
-    }else if(parity == "SpaceParity"){
-        return QSerialPort::SpaceParity;
-    }else if(parity == "MarkParity"){
-        return QSerialPort::MarkParity;
+        return boost::asio::serial_port_base::parity::odd;
     }
-    return QSerialPort::UnknownParity;
+    return boost::asio::serial_port_base::parity::none;
 }
 
 void SerialBoostHandler::open_port(uint32_t baud_rate,
