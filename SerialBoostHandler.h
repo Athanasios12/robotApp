@@ -6,8 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/serial_port_base.hpp>
 #include <boost/bind.hpp>
-
-
+#include <QString>
 
 class SerialBoostHandler
 {
@@ -15,6 +14,7 @@ public:
 
     // Constructs a blocking reader, pass in an open serial_port and
     // a timeout in milliseconds.
+    SerialBoostHandler();
     SerialBoostHandler(const std::string &portName);
 
 
@@ -58,7 +58,7 @@ private :
 
     boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flow);
     boost::asio::serial_port_base::stop_bits::type stopBitsFromStr(const QString &stopBits);
-    uint32_t dataBitsFromStr(const QString &dataBits);
+    uint8_t dataBitsFromStr(const QString &dataBits);
     boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity);
 
 };

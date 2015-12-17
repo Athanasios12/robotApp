@@ -6,6 +6,7 @@
 SerialGui::SerialGui(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::SerialGui)
+
 {
     ui->setupUi(this);
     QVector<QString> commList;

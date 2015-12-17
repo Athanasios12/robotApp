@@ -1,5 +1,5 @@
 #include "SerialBoostHandler.h"
-#include <QString>
+#include <QByteArray>
 
 SerialBoostHandler::SerialBoostHandler(const std::string &portName):
 io(),
@@ -15,7 +15,7 @@ SerialBoostHandler::~SerialBoostHandler()
 
 }
 
-boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flow)
+boost::asio::serial_port_base::flow_control::type SerialBoostHandler::flowFromStr(const QString &flow)
 {
     if(flow == "NoFlowControl"){
         return boost::asio::serial_port_base::flow_control::none;
@@ -27,24 +27,24 @@ boost::asio::serial_port_base::flow_control::type flowFromStr(const QString &flo
     return boost::asio::serial_port_base::flow_control::none;
 }
 
-boost::asio::serial_port_base::stop_bits::type stopBitsFromStr(const QString &stopBits)
+boost::asio::serial_port_base::stop_bits::type SerialBoostHandler::stopBitsFromStr(const QString &stopBits)
 {
-    if(stopBit == "OneStop"){
+    if(stopBits == "OneStop"){
         return boost::asio::serial_port_base::stop_bits::one;
-    }else if(stopBit == "OneAndHalfStop"){
+    }else if(stopBits == "OneAndHalfStop"){
         return boost::asio::serial_port_base::stop_bits::onepointfive;
-    }else if(stopBit == "TwoStop"){
+    }else if(stopBits == "TwoStop"){
         return boost::asio::serial_port_base::stop_bits::two;
     }
     return boost::asio::serial_port_base::stop_bits::one;
 }
 
-uint8_t dataBitsFromStr(const QString &dataBits)
+uint8_t SerialBoostHandler::dataBitsFromStr(const QString &dataBits)
 {
-   return dataBits.toUtf8().constData();
+   return (uint8_t)(*dataBits.toUtf8().constData());
 }
 
-boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity)
+boost::asio::serial_port_base::parity::type SerialBoostHandler::parityFromStr(const QString &parity)
 {
     if(parity == "NoParity"){
         return boost::asio::serial_port_base::parity::none;
@@ -57,18 +57,23 @@ boost::asio::serial_port_base::parity::type parityFromStr(const QString &parity)
 }
 
 void SerialBoostHandler::open_port(uint32_t baud_rate,
-               boost::asio::serial_port_base::flow_control::type flow,
-               boost::asio::serial_port_base::parity::type pair,
-               uint8_t dataBits,
-               boost::asio::serial_port_base::stop_bits::type stopBits,
-               size_t timeout)
+                                   const QString &flow,
+                                   const QString &pair,
+                                   const QString &dataBits,
+                                   const QString &stopBits,
+                                   size_t timeout)
 {
     //set port settings
+    boost::asio::serial_port_base::flow_control::type bFlow = flowFromStr(flow);
+    boost::asio::serial_port_base::stop_bits::type bStopBits = stopBitsFromStr(stopBits);
+    boost::asio::serial_port_base::parity::type bParity = parityFromStr(pair);
+    uint8_t bDataBits = dataBitsFromStr(dataBits);
+
     serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
-    serial.set_option(boost::asio::serial_port_base::flow_control(flow));
-    serial.set_option(boost::asio::serial_port_base::parity(pair));
-    serial.set_option(boost::asio::serial_port_base::stop_bits(stopBits));
-    serial.set_option(boost::asio::serial_port_base::character_size(dataBits));
+    serial.set_option(boost::asio::serial_port_base::flow_control(bFlow));
+    serial.set_option(boost::asio::serial_port_base::parity(bParity));
+    serial.set_option(boost::asio::serial_port_base::stop_bits(bStopBits));
+    serial.set_option(boost::asio::serial_port_base::character_size(bDataBits));
 
     //set read timeout
     this->timeout = timeout; //ms

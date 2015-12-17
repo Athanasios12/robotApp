@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include "SerialCommHandler.h"
-#include "SerialBoostHandler.h"
 #include "serialthread.h"
+#include "SerialBoostHandler.h"
 
 namespace Ui {
 class SerialGui;
@@ -41,8 +41,8 @@ public slots:
 
 private:
     Ui::SerialGui *ui;
-    SerialCommHandler spiHandler;
-    SerialBoostHandler serialBoost;
+    SerialCommHandler spiHandler; // change to raw pointers or scoped pointers
+    SerialBoostHandler *bSerialHandler;
     SerialThread *serialThread;
 };
 
