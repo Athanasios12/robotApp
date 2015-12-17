@@ -1,10 +1,12 @@
 #include "SerialBoostHandler.h"
 #include <QByteArray>
+#include <boost/bind.hpp>
+#include<boost/system/error_code.hpp>
 
-SerialBoostHandler::SerialBoostHandler(const std::string &portName):
+SerialBoostHandler::SerialBoostHandler():
 io(),
 read_error(true),
-serial(io, portName),
+serial(io),
 timer(serial.get_io_service())
 {
 
@@ -12,7 +14,10 @@ timer(serial.get_io_service())
 
 SerialBoostHandler::~SerialBoostHandler()
 {
-
+    if(serial.is_open())
+    {
+        serial.close();
+    }
 }
 
 boost::asio::serial_port_base::flow_control::type SerialBoostHandler::flowFromStr(const QString &flow)
@@ -56,7 +61,8 @@ boost::asio::serial_port_base::parity::type SerialBoostHandler::parityFromStr(co
     return boost::asio::serial_port_base::parity::none;
 }
 
-void SerialBoostHandler::open_port(uint32_t baud_rate,
+bool SerialBoostHandler::open_port(const std::string &portName,
+                                   uint32_t baud_rate,
                                    const QString &flow,
                                    const QString &pair,
                                    const QString &dataBits,
@@ -77,6 +83,28 @@ void SerialBoostHandler::open_port(uint32_t baud_rate,
 
     //set read timeout
     this->timeout = timeout; //ms
+
+    serial.open(portName, boost_error);
+
+    if(boost_error != boost::system::errc::success)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void SerialBoostHandler::close_port()
+{
+    if(serial.is_open())
+    {
+        serial.close();
+    }
+}
+
+bool SerialBoostHandler::isConnected()
+{
+    return serial.is_open();
 }
 
 std::string SerialBoostHandler::read_line()

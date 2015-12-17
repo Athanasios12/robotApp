@@ -5,7 +5,8 @@
 
 SerialGui::SerialGui(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::SerialGui)
+    ui(new Ui::SerialGui),
+    bSerialHandler(new SerialBoostHandler())
 
 {
     ui->setupUi(this);
@@ -95,16 +96,28 @@ void SerialGui::setCbOptions()
 
 bool SerialGui::startSerialComm()
 {
-    if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
-                            ui->cbBaudRate->currentData().value<qint32>(),
-                            ui->cbDataBits->currentText(),
-                            ui->cbParityBit->currentText(),
-                            ui->cbStopBit->currentText(),
-                            ui->cbFlowControl->currentText()))
+//    if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
+//                            ui->cbBaudRate->currentData().value<qint32>(),
+//                            ui->cbDataBits->currentText(),
+//                            ui->cbParityBit->currentText(),
+//                            ui->cbStopBit->currentText(),
+//                            ui->cbFlowControl->currentText()))
+//    {
+//        appendDialogWindow("Connection Error, couldn't open port\n");
+//        return false;
+//    }
+    if(!bSerialHandler->open_port(ui->cbPortComm->currentText().toStdString(),
+                                  ui->cbBaudRate->currentData().value<uint32_t>(),
+                                  ui->cbDataBits->currentText(),
+                                  ui->cbParityBit->currentText(),
+                                  ui->cbStopBit->currentText(),
+                                  ui->cbFlowControl->currentText(),
+                                  100))
     {
-        appendDialogWindow("Connection Error, couldn't open port\n");
-        return false;
+            appendDialogWindow("Connection Error, couldn't open port\n");
+            return false;
     }
+
     serialThread->start();
     return true;
 }
@@ -126,7 +139,19 @@ void SerialGui::on_pbSendData_clicked()
 
 void SerialGui::on_pbStartDataRead_clicked()
 {
-    if(!spiHandler.isSerialOpened())
+//    if(!spiHandler.isSerialOpened())
+//    {
+//        if(startSerialComm())
+//        {
+//            appendDialogWindow("Connected to port :" +
+//                               ui->cbPortComm->currentText() + "\n");
+//        }else
+//        {
+//            appendDialogWindow("Error, couldn't connect to port :" +
+//                               ui->cbPortComm->currentText() + "\n");
+//        }
+//    }
+    if(!bSerialHandler->isConnected())
     {
         if(startSerialComm())
         {
@@ -138,14 +163,15 @@ void SerialGui::on_pbStartDataRead_clicked()
                                ui->cbPortComm->currentText() + "\n");
         }
     }
+
 }
 
 void SerialGui::on_StopDataRead_clicked()
 {
-    if(spiHandler.isSerialOpened())
+    if(bSerialHandler->isConnected())
     {
         serialThread->Stop = true;
-        spiHandler.disconnectSerialDevice();
+        bSerialHandler->close_port();
     }
 }
 
