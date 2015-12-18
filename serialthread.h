@@ -18,7 +18,7 @@ public slots:
 private:
     //SerialCommHandler *serialPtr;
     SerialBoostHandler *bSerialHandler;
-    const QByteArray *dataPtr;
+    QByteArray *dataPtr;
     bool dataSend;
 public:
     bool Stop;
