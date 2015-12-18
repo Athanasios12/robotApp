@@ -18,21 +18,21 @@ public:
     ~SerialBoostHandler();
 
     bool open_port(const std::string &portName,
-                   uint32_t baud,
-                   const QString &dataBits,
-                   const QString &parity,
-                   const QString &stopBit,
+                   uint32_t baud_rate,
                    const QString &flow,
+                   const QString &pair,
+                   const QString &dataBits,
+                   const QString &stopBits,
                    size_t timeout);
 
     void close_port();
 
     bool isConnected();
 
-    std::string read_line();
+    bool read_line(std::string &data);
 
 
-    std::string read_All();
+    bool read_All(std::string &data);
 
     void write(const std::string &data);
 

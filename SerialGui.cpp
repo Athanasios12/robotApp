@@ -24,7 +24,7 @@ SerialGui::SerialGui(QWidget *parent) :
             ui->cbPortComm->addItem(port);
         }
         //create serial thread and connect signals and slots
-        serialThread = new SerialThread(this, &spiHandler);
+        serialThread = new SerialThread(this, bSerialHandler);
         //serial thread emits signal when received data form serial port
         connect(serialThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
         //main thread emits signal when push_button send clicked and communication is established
@@ -108,10 +108,10 @@ bool SerialGui::startSerialComm()
 //    }
     if(!bSerialHandler->open_port(ui->cbPortComm->currentText().toStdString(),
                                   ui->cbBaudRate->currentData().value<uint32_t>(),
-                                  ui->cbDataBits->currentText(),
-                                  ui->cbParityBit->currentText(),
-                                  ui->cbStopBit->currentText(),
                                   ui->cbFlowControl->currentText(),
+                                  ui->cbParityBit->currentText(),
+                                  ui->cbDataBits->currentText(),
+                                  ui->cbStopBit->currentText(),
                                   100))
     {
             appendDialogWindow("Connection Error, couldn't open port\n");
@@ -125,8 +125,8 @@ bool SerialGui::startSerialComm()
 //Push Button slots
 void SerialGui::on_pbSendData_clicked()
 {
-    bool isConnected = spiHandler.isSerialOpened();
-    if(!spiHandler.isSerialOpened())
+    bool isConnected = bSerialHandler->isConnected();
+    if(!bSerialHandler->isConnected())
     {
         appendDialogWindow("Connection Error, start communication before sending data!\n");
     }

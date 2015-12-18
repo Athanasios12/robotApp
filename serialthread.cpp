@@ -1,9 +1,9 @@
 #include "serialthread.h"
 #include <QMutex>
 
-SerialThread::SerialThread(QObject *parent, SerialCommHandler *serial):
+SerialThread::SerialThread(QObject *parent, SerialBoostHandler *serial):
     QThread(parent),
-    serialPtr(serial),
+    bSerialHandler(serial),
     dataSend(false),
     Stop(false)
 {
@@ -12,7 +12,7 @@ SerialThread::SerialThread(QObject *parent, SerialCommHandler *serial):
 
 void SerialThread::run()
 {
-    if(serialPtr->isSerialOpened())
+    if(bSerialHandler->isConnected())
     {
         Stop = false;
         QMutex mutex;
@@ -23,13 +23,14 @@ void SerialThread::run()
             if(dataSend)
             {
                 dataSend = false;
-                serialPtr->writeToSerialDevice(*dataPtr);
+                bSerialHandler->write(dataPtr->constData(), dataPtr->count());
+                //serialPtr->writeToSerialDevice(*dataPtr);
             }
-            QByteArray readData;
+            std::string rData;
             totalData.clear();
-            while(serialPtr->readFromSerialDevice(readData))
+            while(bSerialHandler->read_All(rData))
             {
-                totalData += readData;
+                totalData += QByteArray(rData.c_str());
             }
             if(!totalData.isEmpty())
             {

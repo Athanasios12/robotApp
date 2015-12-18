@@ -46,7 +46,7 @@ boost::asio::serial_port_base::stop_bits::type SerialBoostHandler::stopBitsFromS
 
 uint8_t SerialBoostHandler::dataBitsFromStr(const QString &dataBits)
 {
-   return (uint8_t)(*dataBits.toUtf8().constData());
+    return (uint8_t)dataBits.toUInt();
 }
 
 boost::asio::serial_port_base::parity::type SerialBoostHandler::parityFromStr(const QString &parity)
@@ -75,6 +75,8 @@ bool SerialBoostHandler::open_port(const std::string &portName,
     boost::asio::serial_port_base::parity::type bParity = parityFromStr(pair);
     uint8_t bDataBits = dataBitsFromStr(dataBits);
 
+    serial.open(portName, boost_error);
+
     serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
     serial.set_option(boost::asio::serial_port_base::flow_control(bFlow));
     serial.set_option(boost::asio::serial_port_base::parity(bParity));
@@ -84,7 +86,7 @@ bool SerialBoostHandler::open_port(const std::string &portName,
     //set read timeout
     this->timeout = timeout; //ms
 
-    serial.open(portName, boost_error);
+
 
     if(boost_error != boost::system::errc::success)
     {
@@ -107,28 +109,30 @@ bool SerialBoostHandler::isConnected()
     return serial.is_open();
 }
 
-std::string SerialBoostHandler::read_line()
+bool SerialBoostHandler::read_line(std::string &data)
 {
     char ch;
-    std::string response;
-
+    data = "";
+    bool readSmth = false;
     while (read_char(ch) && ch != '\n')
     {
-        response += ch;
+        data += ch;
+        readSmth = true;
     }
-    return response;
+    return readSmth;
 }
 
-std::string SerialBoostHandler::read_All()
+bool SerialBoostHandler::read_All(std::string &data)
 {
     char ch;
-    std::string response;
-
+    data = "";
+    bool readSmth = false;
     while (read_char(ch))
     {
-        response += ch;
+        data += ch;
+        readSmth = true;
     }
-    return response;
+    return readSmth;
 }
 
 void SerialBoostHandler::write(const std::string &data)
