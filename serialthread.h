@@ -15,7 +15,7 @@ public slots:
     void sendData(const QByteArray &data);
 private:
     SerialCommHandler *serialPtr;
-    const QByteArray *dataPtr;
+    QByteArray *dataPtr;
     bool dataSend;
 public:
     bool Stop;

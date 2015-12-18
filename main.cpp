@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    RobotCmdGui r;
+    SerialGui r;
     r.show();
 
     return a.exec();

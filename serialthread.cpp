@@ -23,6 +23,7 @@ void SerialThread::run()
             if(dataSend)
             {
                 dataSend = false;
+                *dataPtr += 13; // /r character ascii number
                 serialPtr->writeToSerialDevice(*dataPtr);
             }
             QByteArray readData;
