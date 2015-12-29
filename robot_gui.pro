@@ -13,19 +13,34 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = robot_gui
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
     serialcommhandler.cpp \
     serialthread.cpp \
     SerialGui.cpp \
-    RobotCmdGui.cpp
+    RobotCmdGui.cpp \
+    SerialBoostHandler.cpp
 
 HEADERS  += \
     serialcommhandler.h \
     serialthread.h \
     SerialGui.h \
-    RobotCmdGui.h
+    RobotCmdGui.h \
+    SerialBoostHandler.h
+
+
+INCLUDEPATH += D:\boost_1_59_0
+LIBPATH     += D:\boost_1_59_0\stage\lib
 
 FORMS    += \
     SerialGui.ui \
     RobotCmdGui.ui
+
+LIBS += -LD:/boost_1_59_0/stage/lib
+LIBS += -lboost_system-mgw49-mt-d-1_59 \
+        -lboost_thread-mgw49-mt-d-1_59 \
+        -lboost_serialization-mgw49-mt-d-1_59 \
+        -lboost_regex-mgw49-mt-d-1_59 \
+        -lboost_date_time-mgw49-mt-d-1_59\
+        -lwsock32 \
+        -lws2_32
+

@@ -150,7 +150,7 @@ bool SerialCommHandler::writeToSerialDevice(const QByteArray &data)
 
 bool SerialCommHandler::readFromSerialDevice(QByteArray &data)
 {
-    if(serial.waitForReadyRead(100))
+    if(serial.waitForReadyRead(1000))
     {
         data = serial.readAll();
         return true;
