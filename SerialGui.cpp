@@ -3,10 +3,13 @@
 #include <QMutex>
 #include <QDebug>
 
-SerialGui::SerialGui(QWidget *parent) :
+SerialGui::SerialGui(QWidget *parent,
+                     SerialThread *commThread,
+                     SerialBoostHandler *serialHandler) :
     QMainWindow(parent),
     ui(new Ui::SerialGui),
-    bSerialHandler(new SerialBoostHandler())
+    serialThread(commThread),
+    bSerialHandler(serialHandler)
 
 {
     ui->setupUi(this);
@@ -24,7 +27,7 @@ SerialGui::SerialGui(QWidget *parent) :
             ui->cbPortComm->addItem(port);
         }
         //create serial thread and connect signals and slots
-        serialThread = new SerialThread(this, bSerialHandler);
+        //serialThread = new SerialThread(this, bSerialHandler);
         //serial thread emits signal when received data form serial port
         connect(serialThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
         //main thread emits signal when push_button send clicked and communication is established
@@ -60,7 +63,7 @@ void SerialGui::on_cbPortComm_currentIndexChanged(const QString &port)
     QVector<qint32> baudList;
     if(!spiHandler.getAvailableBaudRates(port, baudList))
     {
-        appendDialogWindow("Port does not support any boud rates");
+        appendDialogWindow("Port does not support any baud rates");
     }else
     {
         foreach(qint32 baud, baudList)
@@ -82,8 +85,6 @@ void SerialGui::setCbOptions()
     ui->cbParityBit->addItem("NoParity");
     ui->cbParityBit->addItem("EvenParity");
     ui->cbParityBit->addItem("OddParity");
-    ui->cbParityBit->addItem("SpaceParity");
-    ui->cbParityBit->addItem("MarkParity");
 
     ui->cbFlowControl->addItem("NoFlowControl");
     ui->cbFlowControl->addItem("HardwareControl");
@@ -96,16 +97,7 @@ void SerialGui::setCbOptions()
 
 bool SerialGui::startSerialComm()
 {
-//    if(!spiHandler.openCommPort(ui->cbPortComm->currentText(),
-//                            ui->cbBaudRate->currentData().value<qint32>(),
-//                            ui->cbDataBits->currentText(),
-//                            ui->cbParityBit->currentText(),
-//                            ui->cbStopBit->currentText(),
-//                            ui->cbFlowControl->currentText()))
-//    {
-//        appendDialogWindow("Connection Error, couldn't open port\n");
-//        return false;
-//    }
+
     if(!bSerialHandler->open_port(ui->cbPortComm->currentText().toStdString(),
                                   ui->cbBaudRate->currentData().value<uint32_t>(),
                                   ui->cbFlowControl->currentText(),
@@ -139,18 +131,7 @@ void SerialGui::on_pbSendData_clicked()
 
 void SerialGui::on_pbStartDataRead_clicked()
 {
-//    if(!spiHandler.isSerialOpened())
-//    {
-//        if(startSerialComm())
-//        {
-//            appendDialogWindow("Connected to port :" +
-//                               ui->cbPortComm->currentText() + "\n");
-//        }else
-//        {
-//            appendDialogWindow("Error, couldn't connect to port :" +
-//                               ui->cbPortComm->currentText() + "\n");
-//        }
-//    }
+
     if(!bSerialHandler->isConnected())
     {
         if(startSerialComm())

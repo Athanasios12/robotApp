@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>754</width>
-    <height>534</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pbStartDataRead">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>190</y>
+      <x>240</x>
+      <y>230</y>
       <width>149</width>
       <height>23</height>
      </rect>
@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="StopDataRead">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>230</y>
+      <x>240</x>
+      <y>270</y>
       <width>149</width>
       <height>23</height>
      </rect>
@@ -43,8 +43,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>40</y>
+      <x>120</x>
+      <y>80</y>
       <width>101</width>
       <height>266</height>
      </rect>
@@ -115,8 +115,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>40</y>
+      <x>430</x>
+      <y>80</y>
       <width>241</width>
       <height>301</height>
      </rect>
@@ -145,8 +145,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pbSendData">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>110</y>
+      <x>240</x>
+      <y>150</y>
       <width>151</width>
       <height>23</height>
      </rect>
@@ -158,8 +158,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>152</x>
-      <y>42</y>
+      <x>242</x>
+      <y>82</y>
       <width>67</width>
       <height>16</height>
      </rect>
@@ -171,8 +171,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextEdit" name="etTransferData">
     <property name="geometry">
      <rect>
-      <x>152</x>
-      <y>61</y>
+      <x>242</x>
+      <y>101</y>
       <width>147</width>
       <height>41</height>
      </rect>
@@ -191,7 +191,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>754</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>

@@ -15,7 +15,9 @@ class SerialGui : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SerialGui(QWidget *parent = 0);
+    explicit SerialGui(QWidget *parent = 0,
+                       SerialThread *commThread = 0,
+                       SerialBoostHandler *serialHandler = 0);
     ~SerialGui();
 private:
     void appendDialogWindow(const QString &text);
@@ -41,9 +43,9 @@ public slots:
 
 private:
     Ui::SerialGui *ui;
-    SerialCommHandler spiHandler; // change to raw pointers or scoped pointers
-    SerialBoostHandler *bSerialHandler;
+    SerialCommHandler spiHandler;
     SerialThread *serialThread;
+    SerialBoostHandler *bSerialHandler;
 };
 
 #endif // SERIALGUI_H
