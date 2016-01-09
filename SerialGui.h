@@ -24,7 +24,6 @@ private:
     void setCbOptions();
     bool startSerialComm();
     void removeAllItems();
-
 signals:
     void writeData(QByteArray);
 

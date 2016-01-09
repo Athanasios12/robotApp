@@ -25,7 +25,6 @@ void SerialThread::run()
                 dataSend = false;
                 *dataPtr += 13;
                 bSerialHandler->write(dataPtr->constData(), dataPtr->count());
-                //serialPtr->writeToSerialDevice(*dataPtr);
             }
             std::string rData;
             totalData.clear();

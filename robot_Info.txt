@@ -1,0 +1,14 @@
+Movemaster commands:
+
+Motion and positioning:
+MJ - move joint
+MP - move position
+SP - speed
+
+ED - end of command function
+
+MJ [<waist joint angle>], [<shoulder joint angle>],
+[<elbow joint angle>], [<pitch joint angle>], [<roll joint
+angle>] min angle = 0.01
+
+WH response +-1,+-1,+-1,+-1,+-1, +-1, R,A,N,O

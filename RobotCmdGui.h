@@ -18,9 +18,16 @@ public:
 
 private slots:
     void on_btnSendCmd_clicked();
-
-
     void on_btnSerialSetup_clicked();
+
+    //manual control buttons
+    void on_btnAxis1_clicked();
+    void on_btnAxis2_clicked();
+    void on_btnAxis3_clicked();
+    void on_btnAxis4_clicked();
+    void on_btnAxis5_clicked();
+    void on_btnAxis6_clicked();
+
 public slots:
     void on_receivedData(const QByteArray &data);
 signals:
@@ -34,6 +41,7 @@ private:
 
     void appendHistoryWindow(const QString &text);
     void appendRobotResponseWindow(const QString &text);
+    bool sendData(const QByteArray &data);
 };
 
 #endif // ROBOTCMDGUI_H
