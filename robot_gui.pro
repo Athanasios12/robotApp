@@ -18,24 +18,26 @@ SOURCES += main.cpp\
     serialthread.cpp \
     SerialGui.cpp \
     RobotCmdGui.cpp \
-    SerialBoostHandler.cpp
+    SerialBoostHandler.cpp \
+    XmlConfHandler.cpp
 
 HEADERS  += \
     serialcommhandler.h \
     serialthread.h \
     SerialGui.h \
     RobotCmdGui.h \
-    SerialBoostHandler.h
+    SerialBoostHandler.h \
+    XmlConfHandler.h
 
 
-INCLUDEPATH += D:\boost_1_59_0
-LIBPATH     += D:\boost_1_59_0\stage\lib
+INCLUDEPATH += J:\Boost\boost_1_59_0
+LIBPATH     += J:\Boost\boost_1_59_0\stage\lib
 
 FORMS    += \
     SerialGui.ui \
     RobotCmdGui.ui
 
-LIBS += -LD:\boost_1_59_0/stage/lib
+LIBS += -LJ:\Boost\boost_1_59_0/stage/lib
 LIBS += -lboost_system-mgw49-mt-d-1_59 \
         -lboost_thread-mgw49-mt-d-1_59 \
         -lboost_serialization-mgw49-mt-d-1_59 \

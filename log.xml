@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Session Date="Cz sty 14 23:33:54 2016">
+    <Positions>
+        <Position>X = 54; Y = 12; Z = 20</Position>
+        <Position>X = 54; Y = 12; Z = 22</Position>
+        <Position>X = 54; Y = 12; Z = 24</Position>
+        <Position>X = 54; Y = 12; Z = 25</Position>
+    </Positions>
+    <Alarms>
+        <Alarm>12:45 : Error 1201 : Robot work space breach!</Alarm>
+    </Alarms>
+</Session>
+<Session Date="Cz sty 14 23:15:42 2016">
+    <Positions>
+        <Position>X = 54; Y = 12; Z = 20</Position>
+        <Position>X = 54; Y = 12; Z = 22</Position>
+        <Position>X = 54; Y = 12; Z = 24</Position>
+        <Position>X = 54; Y = 12; Z = 25</Position>
+    </Positions>
+    <Alarms>
+        <Alarm>12:45 : Error 1201 : Robot work space breach!</Alarm>
+    </Alarms>
+</Session>

@@ -27,7 +27,6 @@ SerialGui::SerialGui(QWidget *parent,
             ui->cbPortComm->addItem(port);
         }
         //create serial thread and connect signals and slots
-        //serialThread = new SerialThread(this, bSerialHandler);
         //serial thread emits signal when received data form serial port
         connect(serialThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
         //main thread emits signal when push_button send clicked and communication is established

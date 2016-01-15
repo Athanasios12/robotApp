@@ -48,6 +48,53 @@ void RobotCmdGui::on_btnSerialSetup_clicked()
     serialUi->show();
 }
 
+void RobotCmdGui::extractPosition(const QString &posData)
+{
+    bool processed = false;
+    QRegularExpression regexDigit("\\D\\d");
+    quint32 pos = 0;
+    quint8 counter = 0;
+    while(!processed)
+    {
+        QRegularExpressionMatch match = regexDigit.match(posData, pos);
+        processed = !match.hasMatch();
+        if(match.hasMatch())
+        {
+            QString positionValue = match.captured(0);
+            switch ( counter )
+            {
+             case 0:
+                //set X lcd ;
+                robotUi->lcdXPosition->display(positionValue);
+                break;
+             case 1:
+                //set Y lcd
+                robotUi->lcdYPosition->display(positionValue);
+                break;
+            case 2:
+               //set Z ldc
+                robotUi->lcdZPosition->display(positionValue);
+               break;
+            case 3:
+               //set A lcd
+                robotUi->lcdAAngle->display(positionValue);
+               break;
+            case 4:
+               //set B lcd
+                robotUi->lcdBAngle->display(positionValue);
+               break;
+            case 5:
+               //set C lcd
+                robotUi->lcdCAngle->display(positionValue);
+               break;
+            }
+            pos += positionValue.size();
+            ++counter;
+
+        }
+    }
+}
+
 void RobotCmdGui::on_receivedData(const QByteArray &data)
 {
     appendRobotResponseWindow(data.toStdString().c_str());
@@ -60,49 +107,7 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
         {
             QString positionStr = match.captured(0); // matched == "23 def"
             //actualize the led display
-            //extract digits from stringfrom string \D\d
-            bool processed = false;
-            QRegularExpression regexDigit("\\D\\d");
-            quint32 pos = 0;
-            quint8 counter = 0;
-            while(!processed)
-            {
-                match = regexDigit.match(positionStr, pos);
-                if(match.hasMatch())
-                {
-                    QString positionValue = match.captured(0);
-                    switch ( counter )
-                    {
-                     case 0:
-                        //set X lcd ;
-                        robotUi->lcdXPosition->display(positionValue);
-                        break;
-                     case 1:
-                        //set Y lcd
-                        robotUi->lcdYPosition->display(positionValue);
-                        break;
-                    case 2:
-                       //set Z ldc
-                        robotUi->lcdZPosition->display(positionValue);
-                       break;
-                    case 3:
-                       //set A lcd
-                        robotUi->lcdAAngle->display(positionValue);
-                       break;
-                    case 4:
-                       //set B lcd
-                        robotUi->lcdBAngle->display(positionValue);
-                       break;
-                    case 5:
-                       //set C lcd
-                        robotUi->lcdCAngle->display(positionValue);
-                       break;
-                    }
-                    pos = positionValue.size();
-                    ++counter;
-
-                }
-            }
+            extractPosition(positionStr);
         }
     }
 }

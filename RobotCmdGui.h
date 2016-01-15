@@ -41,7 +41,10 @@ private:
 
     void appendHistoryWindow(const QString &text);
     void appendRobotResponseWindow(const QString &text);
+
     bool sendData(const QByteArray &data);
+
+    void extractPosition(const QString &posData);
 };
 
 #endif // ROBOTCMDGUI_H
