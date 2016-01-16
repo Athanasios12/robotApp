@@ -22,7 +22,7 @@ XmlConfHandler::XmlConfHandler(const QString &fileName):
     teachingSequenceID(0)
 
 {
-    m_filePtr = new QFile(m_fileName);
+    m_filePtr = QScopedPointer<QFile>(new QFile(m_fileName));
 }
 
 XmlConfHandler::XmlConfHandler():
@@ -167,7 +167,7 @@ bool XmlConfHandler::startNewSession()
         }
         //here use xml reader and writer combo to append the file and create new session
         getXmlFileOldContent(oldContent, oldEndElements);
-        file.resize(0);
+        m_filePtr->resize(0);
         m_stream = new QXmlStreamWriter (m_filePtr.data());
         m_stream->setAutoFormatting(true);
 
