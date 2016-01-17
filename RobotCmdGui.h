@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "SerialGui.h"
+#include "XmlConfHandler.h"
 
 namespace Ui {
 class RobotCmdGui;
@@ -28,6 +29,14 @@ private slots:
     void on_btnAxis5_clicked();
     void on_btnAxis6_clicked();
 
+    //positioning seqeunce buttons
+    void on_btnExecuteSequence_clicked();
+    void on_btnLoadSequence_clicked();
+    void on_btnShowSequence_clicked();
+    void on_btnEndSequence_clicked();
+    void on_btnAddPosition_clicked();
+    void on_btnStartSequence_clicked();
+
 public slots:
     void on_receivedData(const QByteArray &data);
 signals:
@@ -38,9 +47,13 @@ private:
     SerialGui *serialUi;
     SerialThread *commThread;
     SerialBoostHandler *bSerialHandler;
+    XmlConfHandler *seqeunceHandler;
+    QString currentRobotPosition;
+    QVector<QString> pendingPositionSequence;
 
     void appendHistoryWindow(const QString &text);
     void appendRobotResponseWindow(const QString &text);
+    void appendSequenceWindow(const QString &text);
 
     bool sendData(const QByteArray &data);
 

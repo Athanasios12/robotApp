@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1157</width>
+    <height>936</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>40</y>
+      <y>80</y>
       <width>258</width>
       <height>213</height>
      </rect>
@@ -44,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>40</y>
+      <y>80</y>
       <width>258</width>
       <height>213</height>
      </rect>
@@ -66,7 +66,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>300</y>
+      <y>340</y>
       <width>258</width>
       <height>213</height>
      </rect>
@@ -88,7 +88,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>260</y>
+      <y>300</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -101,7 +101,7 @@
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>260</y>
+      <y>300</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -110,13 +110,91 @@
      <string>Serial Setup</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QPushButton" name="btnStartSequence">
+    <property name="geometry">
+     <rect>
+      <x>1010</x>
+      <y>100</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start Teaching Sequence</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnEndSequence">
+    <property name="geometry">
+     <rect>
+      <x>1010</x>
+      <y>250</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>End Teaching Sequence</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAddPosition">
+    <property name="geometry">
+     <rect>
+      <x>1010</x>
+      <y>180</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add Current Position</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnLoadSequence">
     <property name="geometry">
      <rect>
       <x>690</x>
-      <y>40</y>
-      <width>81</width>
-      <height>201</height>
+      <y>380</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load Sequence</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnExecuteSequence">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>310</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Execute Sequence</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnShowSequence">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>310</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show Sequences</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>20</y>
+      <width>581</width>
+      <height>48</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -128,104 +206,108 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>X</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>X</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdXPosition"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLCDNumber" name="lcdXPosition"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Y</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLCDNumber" name="lcdYPosition"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Z</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Y</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdYPosition"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLCDNumber" name="lcdZPosition"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>A</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLCDNumber" name="lcdAAngle"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>B</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Z</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdZPosition"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLCDNumber" name="lcdBAngle"/>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>A</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdAAngle"/>
+         </item>
+        </layout>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>C</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>B</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdBAngle"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLCDNumber" name="lcdCAngle"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>C</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdCAngle"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -234,84 +316,178 @@
    <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>300</y>
-      <width>71</width>
-      <height>231</height>
+      <x>860</x>
+      <y>380</y>
+      <width>131</width>
+      <height>101</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
-      <widget class="QPushButton" name="btnAxis1">
-       <property name="text">
-        <string>A1</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Session ID</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextEdit" name="etSessionID"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="btnAxis4">
-       <property name="text">
-        <string>A4</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnAxis2">
-       <property name="text">
-        <string>A2</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnAxis5">
-       <property name="text">
-        <string>A5</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnAxis3">
-       <property name="text">
-        <string>A3</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnAxis6">
-       <property name="text">
-        <string>A6</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Sequence ID</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextEdit" name="etSequenceID"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>80</y>
+      <width>301</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_9">
+     <item>
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Teaching Seqence Window</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextBrowser" name="txSequenceWindow"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QPushButton" name="btnAxis3">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>430</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAxis4">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>430</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A4</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAxis5">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>500</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A5</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAxis1">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>360</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAxis2">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>360</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAxis6">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>500</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>A6</string>
+    </property>
+   </widget>
+   <zorder>layoutWidget</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget_2</zorder>
-   <zorder>layoutWidget_4</zorder>
    <zorder>layoutWidget_3</zorder>
    <zorder>btnSendCmd</zorder>
    <zorder>btnSerialSetup</zorder>
-   <zorder>btnAxis1</zorder>
-   <zorder>btnAxis2</zorder>
-   <zorder>btnAxis4</zorder>
-   <zorder>btnAxis3</zorder>
-   <zorder>btnAxis6</zorder>
-   <zorder>btnAxis5</zorder>
+   <zorder>btnStartSequence</zorder>
+   <zorder>btnEndSequence</zorder>
+   <zorder>btnAddPosition</zorder>
+   <zorder></zorder>
+   <zorder>btnLoadSequence</zorder>
    <zorder>lcdCAngle</zorder>
-   <zorder>lcdAAngle</zorder>
-   <zorder>lcdBAngle</zorder>
-   <zorder>label_8</zorder>
-   <zorder>label_9</zorder>
-   <zorder>label_10</zorder>
+   <zorder></zorder>
+   <zorder>label_7</zorder>
+   <zorder></zorder>
+   <zorder></zorder>
+   <zorder></zorder>
+   <zorder></zorder>
+   <zorder></zorder>
    <zorder>label_4</zorder>
-   <zorder>lcdZPosition</zorder>
+   <zorder>txSequenceWindow</zorder>
+   <zorder>btnExecuteSequence</zorder>
+   <zorder>btnShowSequence</zorder>
+   <zorder>etSessionID</zorder>
+   <zorder>label_11</zorder>
+   <zorder>etSequenceID</zorder>
+   <zorder>label_12</zorder>
+   <zorder>label_13</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1157</width>
      <height>21</height>
     </rect>
    </property>

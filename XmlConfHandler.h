@@ -10,19 +10,18 @@ class XmlConfHandler
 {
 public:
     XmlConfHandler(const QString &fileName);
-    XmlConfHandler();
     ~XmlConfHandler();
-
-    void setFileName(const QString &fileName);
 
     bool isLogOpen();
     bool startNewSession();
+    bool endCurrentSession();
 
     bool startNewTeachingSequence();
     bool addPositionToTeach(const QString &position);
+    bool endCurrentTeachingSequence();
 
     bool extractPositionList(quint64 sessionID, quint64 sequenceID, QVector<QString> &positions);
-    bool getSessionSequenceIDs(QVector<qint64> &IDsTab);
+    bool getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &IDsTab);
 
     struct XmlTag
     {
@@ -31,15 +30,15 @@ public:
         QXmlStreamAttributes attribiutes;
     };
 private:
-    QScopedPointer<QFile> m_filePtr;
     QString m_fileName;
+    QScopedPointer<QFile> m_filePtr;
     bool newSequenceStarted;
     bool newSessionStarted;
+    quint64 teachingSequenceID;
+    quint64 currentSessionID;
     QScopedPointer<QXmlStreamWriter> m_stream;
     QVector<XmlTag> oldContent;
     QVector<quint64> oldEndElements;
-    quint64 teachingSequenceID;
-    quint64 currentSessionID;
 
     bool writeXmlOldContent(const QVector<XmlTag> &tags,
                             QVector<quint64> &endElementsNumbers);

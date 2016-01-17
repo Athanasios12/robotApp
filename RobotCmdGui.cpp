@@ -2,6 +2,8 @@
 #include "ui_RobotCmdGui.h"
 #include <QDateTime>
 
+const QString SEQUENCE_FILE_NAME = "Robot_Conf.xml";
+
 RobotCmdGui::RobotCmdGui(QWidget *parent) :
     QMainWindow(parent),
     robotUi(new Ui::RobotCmdGui),
@@ -11,6 +13,8 @@ RobotCmdGui::RobotCmdGui(QWidget *parent) :
     commThread = new SerialThread(this, bSerialHandler);
     serialUi = new SerialGui(this, commThread, bSerialHandler);
 
+    seqeunceHandler = new XmlConfHandler(SEQUENCE_FILE_NAME);
+    seqeunceHandler->startNewSession();
     //connect signals an slots between serialthread serial gui and robotcmdgui
     connect(commThread, SIGNAL(receivedData(QByteArray)),this, SLOT(on_receivedData(QByteArray)));
     //main thread emits signal when push_button send clicked and communication is established
@@ -124,6 +128,12 @@ void RobotCmdGui::appendRobotResponseWindow(const QString &text)
                                      text);
 }
 
+void RobotCmdGui::appendSequenceWindow(const QString &text)
+{
+    robotUi->txSequenceWindow->setPlainText(robotUi->txSequenceWindow->toPlainText() +
+                                     text);
+}
+
 
 void RobotCmdGui::on_btnAxis1_clicked()
 {
@@ -153,4 +163,48 @@ void RobotCmdGui::on_btnAxis5_clicked()
 void RobotCmdGui::on_btnAxis6_clicked()
 {
     sendData("MJ 0,0,0,0,0,1");
+}
+
+void RobotCmdGui::on_btnExecuteSequence_clicked()
+{
+    if(!pendingPositionSequence.empty())
+    {
+        //send position seqence to robot
+    }
+}
+
+void RobotCmdGui::on_btnLoadSequence_clicked()
+{
+    quint64 session_ID = robotUi->etSessionID->toPlainText().toULongLong();
+    quint64 sequence_ID = robotUi->etSequenceID->toPlainText().toULongLong();
+
+    seqeunceHandler->extractPositionList(session_ID, sequence_ID, pendingPositionSequence);
+}
+
+typedef QPair<quint64, quint64> IDPair;
+void RobotCmdGui::on_btnShowSequence_clicked()
+{
+    QVector<QPair<quint64, quint64> > seqeunces;
+    seqeunceHandler->getSessionSequenceIDs(seqeunces);
+    appendSequenceWindow("\nAvailable Teaching Sequences: \n");
+    foreach(IDPair idPair, seqeunces)
+    {
+        appendSequenceWindow("Session = " + QString::number(idPair.first) +
+                             " Sequence = " + QString::number(idPair.second )+ "\n");
+    }
+}
+
+void RobotCmdGui::on_btnEndSequence_clicked()
+{
+    seqeunceHandler->endCurrentTeachingSequence();
+}
+
+void RobotCmdGui::on_btnAddPosition_clicked()
+{
+    seqeunceHandler->addPositionToTeach(currentRobotPosition);
+}
+
+void RobotCmdGui::on_btnStartSequence_clicked()
+{
+    seqeunceHandler->startNewTeachingSequence();
 }

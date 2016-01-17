@@ -17,17 +17,12 @@ const QString SEQUENCE_ID_ATTR = "Sequence_ID";
 
 XmlConfHandler::XmlConfHandler(const QString &fileName):
     m_fileName(fileName),
+    m_filePtr(new QFile(fileName)),
     newSequenceStarted(false),
     newSessionStarted(false),
-    teachingSequenceID(0)
+    teachingSequenceID(0),
+    m_stream(new QXmlStreamWriter(m_filePtr.data()))
 
-{
-    m_filePtr = QScopedPointer<QFile>(new QFile(m_fileName));
-}
-
-XmlConfHandler::XmlConfHandler():
-    newSequenceStarted(false),
-    newSessionStarted(false)
 {
 
 }
@@ -40,16 +35,11 @@ XmlConfHandler::~XmlConfHandler()
     }
 }
 
-void XmlConfHandler::setFileName(const QString &fileName)
-{
-    m_fileName = fileName;
-}
-
-
 bool XmlConfHandler::isLogOpen()
 {
     return m_filePtr->isOpen();
 }
+
 bool XmlConfHandler::writeXmlOldContent(const QVector<XmlTag> &tags,
                                         QVector<quint64> &endElementsNumbers)
 {
@@ -159,7 +149,7 @@ bool XmlConfHandler::getXmlFileOldContent(QVector<XmlTag> &tags,
 
 bool XmlConfHandler::startNewSession()
 {
-    if(!m_filePtr->isOpen())
+    if(!m_filePtr->isOpen() && !newSessionStarted)
     {
         if (!m_filePtr->open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
         {
@@ -168,7 +158,6 @@ bool XmlConfHandler::startNewSession()
         //here use xml reader and writer combo to append the file and create new session
         getXmlFileOldContent(oldContent, oldEndElements);
         m_filePtr->resize(0);
-        m_stream = new QXmlStreamWriter (m_filePtr.data());
         m_stream->setAutoFormatting(true);
 
         QDateTime timeStamp = QDateTime::currentDateTime();
@@ -176,18 +165,25 @@ bool XmlConfHandler::startNewSession()
         m_stream->writeStartDocument();
         m_stream->writeStartElement(SESSION_TAG);//</Session>
         m_stream->writeAttribute(DATE_ATTR, timeStamp.toString());
-        m_stream->writeAttribute(SESSION_ID_ATTR, currentSessionID);
+        m_stream->writeAttribute(SESSION_ID_ATTR, QString::number(currentSessionID));
         newSessionStarted = true;
+        return true;
     }
+    return false;
 }
 
-void XmlConfHandler::endCurrentSession()
+bool XmlConfHandler::endCurrentSession()
 {
-    m_stream->writeEndElement();//</Session>
-    writeXmlOldContent(oldContent, oldEndElements);
-    m_filePtr->close();
-    teachingSequenceID = 0;
-    newSessionStarted = false;
+    if(newSessionStarted)
+    {
+        m_stream->writeEndElement();//</Session>
+        writeXmlOldContent(oldContent, oldEndElements);
+        m_filePtr->close();
+        teachingSequenceID = 0;
+        newSessionStarted = false;
+        return true;
+    }
+    return false;
 }
 
 bool XmlConfHandler::startNewTeachingSequence()
@@ -195,8 +191,8 @@ bool XmlConfHandler::startNewTeachingSequence()
     if(newSessionStarted)
     {
         m_stream->writeStartElement(POSITIONS_TAG);
-        m_stream->writeAttribute(SESSION_ID_ATTR, currentSessionID);
-        m_stream->writeAttribute(SEQUENCE_ID_ATTR, teachingSequenceID);
+        m_stream->writeAttribute(SESSION_ID_ATTR, QString::number(currentSessionID));
+        m_stream->writeAttribute(SEQUENCE_ID_ATTR, QString::number(teachingSequenceID));
         newSequenceStarted = true;
         return true;
     }
@@ -209,9 +205,14 @@ bool XmlConfHandler::startNewTeachingSequence()
 
 bool XmlConfHandler::endCurrentTeachingSequence()
 {
-    m_stream->writeEndElement(); // </positions>
-    teachingSequenceID++;
-    newSequenceStarted = false;
+    if(newSequenceStarted)
+    {
+        m_stream->writeEndElement(); // </positions>
+        teachingSequenceID++;
+        newSequenceStarted = false;
+        return true;
+    }
+    return false;
 }
 
 bool XmlConfHandler::addPositionToTeach(const QString &position)
@@ -236,15 +237,15 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
         quint32 i = 0;
         while(lineNumber <= oldEndElements.last())
         {
-            if(!findLineNumber(lineNumber, endElementsNumbers))
+            if(!findLineNumber(lineNumber, oldEndElements))
             {
                 if(oldContent[i].tagName == POSITIONS_TAG && !oldContent[i].attribiutes.empty())
                 {
-                    if(oldContent[i].attribiutes[0].value() == sessionID)
+                    if(oldContent[i].attribiutes[0].value().toULongLong() == sessionID)
                     {
-                        if(oldContent[i].attribiutes[1].value() == sequenceID)
+                        if(oldContent[i].attribiutes[0].value().toULongLong() == sequenceID)
                         {
-                            while(findLineNumber(lineNumber, endElementsNumbers))
+                            while(findLineNumber(lineNumber, oldEndElements))
                             {
                                 if(oldContent[i].tagName == POSITION_TAG && !oldContent[i].tagCharacters.isEmpty())
                                 {
@@ -260,7 +261,9 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
             }
             lineNumber++;
         }
+        return true;
     }
+    return false;
 }
 
 bool XmlConfHandler::getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &IDsTab)
@@ -276,14 +279,14 @@ bool XmlConfHandler::getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &ID
         {
             if(!tag.attribiutes.empty())
             {
-                foreach(QXmlStreamAttribute attr, tag)
+                foreach(QXmlStreamAttribute attr, tag.attribiutes)
                 {
-                    if(attr.name() = SESSION_ID_ATTR)
+                    if(attr.name().toString() == SESSION_ID_ATTR)
                     {
                         firstID = attr.value().toULongLong();
                         firstReady = true;
                     }
-                    if(attr.name() = SESSION_ID_ATTR)
+                    if(attr.name().toString() == SESSION_ID_ATTR)
                     {
                         secondID = attr.value().toULongLong();
                         secondReady = true;
