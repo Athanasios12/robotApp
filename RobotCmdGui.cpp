@@ -23,7 +23,9 @@ RobotCmdGui::RobotCmdGui(QWidget *parent) :
 
 RobotCmdGui::~RobotCmdGui()
 {
+    commThread->Stop = true;
     delete robotUi, bSerialHandler, commThread, serialUi;
+    delete seqeunceHandler;
 }
 
 void RobotCmdGui::on_btnSendCmd_clicked()
@@ -55,7 +57,7 @@ void RobotCmdGui::on_btnSerialSetup_clicked()
 void RobotCmdGui::extractPosition(const QString &posData)
 {
     bool processed = false;
-    QRegularExpression regexDigit("\\D\\d");
+    QRegularExpression regexDigit("\\D\\d+.\\d\\d");
     quint32 pos = 0;
     quint8 counter = 0;
     while(!processed)
@@ -103,17 +105,16 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
 {
     appendRobotResponseWindow(data.toStdString().c_str());
     //check if received new position - in future check if received error message
-    if(data.contains("R,A,N,O"))
+    QRegularExpression regexPosition("\\D\\d.*O");
+    QRegularExpressionMatch match = regexPosition.match(data);
+    if (match.hasMatch())
     {
-        QRegularExpression regexPosition("\\D\\d.*O");
-        QRegularExpressionMatch match = regexPosition.match(data);
-        if (match.hasMatch())
-        {
-            QString positionStr = match.captured(0); // matched == "23 def"
-            //actualize the led display
-            extractPosition(positionStr);
-        }
+        QString positionStr = match.captured(0);
+        currentRobotPosition = positionStr;
+        //actualize the led display
+        extractPosition(positionStr);
     }
+
 }
 
 void RobotCmdGui::appendHistoryWindow(const QString &text)
@@ -165,11 +166,21 @@ void RobotCmdGui::on_btnAxis6_clicked()
     sendData("MJ 0,0,0,0,0,1");
 }
 
+void RobotCmdGui::sendPositions()
+{
+    QString positionCode;
+    foreach(QString position, pendingPositionSequence)
+    {
+        positionCode += "MP " + position + "\n";
+    }
+    sendData(QByteArray(positionCode.toStdString().c_str()));
+}
+
 void RobotCmdGui::on_btnExecuteSequence_clicked()
 {
     if(!pendingPositionSequence.empty())
     {
-        //send position seqence to robot
+        sendPositions();
     }
 }
 
@@ -177,8 +188,13 @@ void RobotCmdGui::on_btnLoadSequence_clicked()
 {
     quint64 session_ID = robotUi->etSessionID->toPlainText().toULongLong();
     quint64 sequence_ID = robotUi->etSequenceID->toPlainText().toULongLong();
-
-    seqeunceHandler->extractPositionList(session_ID, sequence_ID, pendingPositionSequence);
+    QVector<QPair<quint64, quint64> > seqeunces;
+    seqeunceHandler->getSessionSequenceIDs(seqeunces);
+    if(!seqeunces.empty())
+    {
+        pendingPositionSequence.clear();
+        seqeunceHandler->extractPositionList(session_ID, sequence_ID, pendingPositionSequence);
+    }
 }
 
 typedef QPair<quint64, quint64> IDPair;
@@ -202,9 +218,11 @@ void RobotCmdGui::on_btnEndSequence_clicked()
 void RobotCmdGui::on_btnAddPosition_clicked()
 {
     seqeunceHandler->addPositionToTeach(currentRobotPosition);
+    pendingPositionSequence.push_back(currentRobotPosition);
 }
 
 void RobotCmdGui::on_btnStartSequence_clicked()
 {
     seqeunceHandler->startNewTeachingSequence();
+    pendingPositionSequence.clear();
 }

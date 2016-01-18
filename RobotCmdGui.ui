@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1157</width>
-    <height>936</height>
+    <height>669</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -188,7 +188,7 @@
      <string>Show Sequences</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -220,7 +220,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdXPosition"/>
+          <widget class="QLCDNumber" name="lcdXPosition">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -237,7 +241,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdYPosition"/>
+          <widget class="QLCDNumber" name="lcdYPosition">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -254,7 +262,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdZPosition"/>
+          <widget class="QLCDNumber" name="lcdZPosition">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -271,7 +283,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdAAngle"/>
+          <widget class="QLCDNumber" name="lcdAAngle">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -288,7 +304,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdBAngle"/>
+          <widget class="QLCDNumber" name="lcdBAngle">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -305,7 +325,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdCAngle"/>
+          <widget class="QLCDNumber" name="lcdCAngle">
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -313,13 +337,13 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>860</x>
       <y>380</y>
       <width>131</width>
-      <height>101</height>
+      <height>192</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -353,7 +377,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>690</x>
@@ -453,6 +477,10 @@
      <string>A6</string>
     </property>
    </widget>
+   <zorder>btnAxis5</zorder>
+   <zorder>btnAxis1</zorder>
+   <zorder>btnAxis2</zorder>
+   <zorder>btnAxis6</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget_2</zorder>
@@ -462,25 +490,13 @@
    <zorder>btnStartSequence</zorder>
    <zorder>btnEndSequence</zorder>
    <zorder>btnAddPosition</zorder>
-   <zorder></zorder>
    <zorder>btnLoadSequence</zorder>
-   <zorder>lcdCAngle</zorder>
-   <zorder></zorder>
-   <zorder>label_7</zorder>
-   <zorder></zorder>
-   <zorder></zorder>
-   <zorder></zorder>
-   <zorder></zorder>
-   <zorder></zorder>
-   <zorder>label_4</zorder>
-   <zorder>txSequenceWindow</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>btnAxis3</zorder>
+   <zorder>btnAxis4</zorder>
    <zorder>btnExecuteSequence</zorder>
    <zorder>btnShowSequence</zorder>
-   <zorder>etSessionID</zorder>
-   <zorder>label_11</zorder>
-   <zorder>etSequenceID</zorder>
-   <zorder>label_12</zorder>
-   <zorder>label_13</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

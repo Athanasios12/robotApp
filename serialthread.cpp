@@ -23,8 +23,8 @@ void SerialThread::run()
             if(dataSend)
             {
                 dataSend = false;
-                *dataPtr += 13;
-                bSerialHandler->write(dataPtr->constData(), dataPtr->count());
+                m_data += 13;
+                bSerialHandler->write(m_data.constData(), m_data.count());
             }
             std::string rData;
             totalData.clear();
@@ -44,6 +44,6 @@ void SerialThread::run()
 void SerialThread::sendData(const QByteArray &data)
 {
     dataSend = true;
-    dataPtr = new QByteArray(data);
+    m_data = data;
 }
 

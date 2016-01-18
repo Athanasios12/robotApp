@@ -29,9 +29,13 @@ XmlConfHandler::XmlConfHandler(const QString &fileName):
 
 XmlConfHandler::~XmlConfHandler()
 {
-    if(m_filePtr->isOpen())
+    if(newSequenceStarted)
     {
-        m_filePtr->close();
+        endCurrentTeachingSequence();
+    }
+    if(newSessionStarted)
+    {
+        endCurrentSession();
     }
 }
 
@@ -232,38 +236,42 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
 {
     if(!newSessionStarted)
     {
-        getXmlFileOldContent(oldContent, oldEndElements); // get xml file content
-        quint64 lineNumber = 2;
-        quint32 i = 0;
-        while(lineNumber <= oldEndElements.last())
+        if (!m_filePtr->open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
         {
-            if(!findLineNumber(lineNumber, oldEndElements))
+            return false;
+        }
+        getXmlFileOldContent(oldContent, oldEndElements); // get xml file content
+    }
+    quint64 lineNumber = 2;
+    quint32 i = 0;
+    while(lineNumber <= oldEndElements.last())
+    {
+        if(!findLineNumber(lineNumber, oldEndElements))
+        {
+            if(oldContent[i].tagName == POSITIONS_TAG && !oldContent[i].attribiutes.empty())
             {
-                if(oldContent[i].tagName == POSITIONS_TAG && !oldContent[i].attribiutes.empty())
+                if(oldContent[i].attribiutes[0].value().toULongLong() == sessionID)
                 {
-                    if(oldContent[i].attribiutes[0].value().toULongLong() == sessionID)
+                    if(oldContent[i].attribiutes[1].value().toULongLong() == sequenceID)
                     {
-                        if(oldContent[i].attribiutes[0].value().toULongLong() == sequenceID)
+                        while(!findLineNumber(lineNumber, oldEndElements))
                         {
-                            while(findLineNumber(lineNumber, oldEndElements))
+                            if(oldContent[i].tagName == POSITION_TAG && !oldContent[i].tagCharacters.isEmpty())
                             {
-                                if(oldContent[i].tagName == POSITION_TAG && !oldContent[i].tagCharacters.isEmpty())
-                                {
-                                    positions.push_back(oldContent[i].tagCharacters);
-                                }
-                                i++;
-                                lineNumber++;
+                                positions.push_back(oldContent[i].tagCharacters);
                             }
+                            i++;
+                            lineNumber++;
                         }
                     }
                 }
-                i++;
             }
-            lineNumber++;
+            i++;
         }
-        return true;
+        lineNumber++;
     }
-    return false;
+    return positions.empty();
+
 }
 
 bool XmlConfHandler::getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &IDsTab)
@@ -271,41 +279,37 @@ bool XmlConfHandler::getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &ID
     if(!newSessionStarted)
     {
         getXmlFileOldContent(oldContent, oldEndElements);
-        quint64 firstID = 0, secondID = 0;
-        bool firstReady = false;
-        bool secondReady = false;
-
-        foreach(XmlTag tag, oldContent)
+    }
+    quint64 firstID = 0, secondID = 0;
+    bool firstReady = false;
+    bool secondReady = false;
+    foreach(XmlTag tag, oldContent)
+    {
+        if(!tag.attribiutes.empty())
         {
-            if(!tag.attribiutes.empty())
+            foreach(QXmlStreamAttribute attr, tag.attribiutes)
             {
-                foreach(QXmlStreamAttribute attr, tag.attribiutes)
+                if(attr.name().toString() == SESSION_ID_ATTR)
                 {
-                    if(attr.name().toString() == SESSION_ID_ATTR)
-                    {
-                        firstID = attr.value().toULongLong();
-                        firstReady = true;
-                    }
-                    if(attr.name().toString() == SESSION_ID_ATTR)
-                    {
-                        secondID = attr.value().toULongLong();
-                        secondReady = true;
-                    }
-                    if(firstReady && secondReady)
-                    {
-                        firstReady = false;
-                        secondReady = false;
-                        IDsTab.push_back(QPair<quint64, quint64>(firstID, secondID));
-                    }
+                    firstID = attr.value().toULongLong();
+                    firstReady = true;
+                }
+                if(attr.name().toString() == SEQUENCE_ID_ATTR)
+                {
+                    secondID = attr.value().toULongLong();
+                    secondReady = true;
+                }
+                if(firstReady && secondReady)
+                {
+                    firstReady = false;
+                    secondReady = false;
+                    IDsTab.push_back(QPair<quint64, quint64>(firstID, secondID));
                 }
             }
         }
-        return true;
     }
-    else
-    {
-        return false;
-    }
+    return IDsTab.empty();
+
 }
 
 bool XmlConfHandler::findLineNumber(quint64 num, const QVector<quint64> &lineNumbers)

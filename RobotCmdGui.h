@@ -58,6 +58,7 @@ private:
     bool sendData(const QByteArray &data);
 
     void extractPosition(const QString &posData);
+    void sendPositions();
 };
 
 #endif // ROBOTCMDGUI_H
