@@ -111,16 +111,23 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
 {
     appendRobotResponseWindow(data.toStdString().c_str());
     //check if received new position - in future check if received error message
-    QRegularExpression regexPosition("\\D\\d.*O");
-    QRegularExpressionMatch match = regexPosition.match(data);
-    if (match.hasMatch())
+    QRegularExpression regexPositionOpen("\\D\\d.*O");
+    QRegularExpression regexPositionClosed("\\D\\d.*C");
+    QRegularExpressionMatch match1 = regexPositionOpen.match(data);
+    QRegularExpressionMatch match2 = regexPositionClosed.match(data);
+    if (match1.hasMatch())
     {
-        QString positionStr = match.captured(0);
+        QString positionStr = match1.captured(0);
+        currentRobotPosition = positionStr;
+        //actualize the led display
+        extractPosition(positionStr);
+    }else if(match2.hasMatch())
+    {
+        QString positionStr = match2.captured(0);
         currentRobotPosition = positionStr;
         //actualize the led display
         extractPosition(positionStr);
     }
-
 }
 
 void RobotCmdGui::appendHistoryWindow(const QString &text)
@@ -169,21 +176,16 @@ void RobotCmdGui::on_btnAxis6_clicked()
     sendData("MJ 0,0,0,0,0," + angleValue);
 }
 
-void RobotCmdGui::sendPositions()
-{
-    QString positionCode;
-    foreach(QString position, pendingPositionSequence)
-    {
-        positionCode += "MP " + position + "\n";
-    }
-    sendData(QByteArray(positionCode.toStdString().c_str()));
-}
-
 void RobotCmdGui::on_btnExecuteSequence_clicked()
 {
-    if(!pendingPositionSequence.empty())
+    if(!pendingSequence.empty())
     {
-        sendPositions();
+        QString positionCode;
+        foreach(QString command, pendingSequence)
+        {
+            positionCode += command + "\n";
+        }
+        sendData(QByteArray(positionCode.toStdString().c_str()));
     }
 }
 
@@ -195,8 +197,8 @@ void RobotCmdGui::on_btnLoadSequence_clicked()
     seqeunceHandler->getSessionSequenceIDs(seqeunces);
     if(!seqeunces.empty())
     {
-        pendingPositionSequence.clear();
-        seqeunceHandler->extractPositionList(session_ID, sequence_ID, pendingPositionSequence);
+        pendingSequence.clear();
+        seqeunceHandler->extractPositionList(session_ID, sequence_ID, pendingSequence);
     }
 }
 
@@ -205,12 +207,12 @@ void RobotCmdGui::on_btnShowSequence_clicked()
 {
     QVector<QPair<quint64, quint64> > seqeunces;
     seqeunceHandler->getSessionSequenceIDs(seqeunces);
-    appendSequenceWindow("\nAvailable Teaching Sequences: \n");
     foreach(IDPair idPair, seqeunces)
     {
         appendSequenceWindow("Session = " + QString::number(idPair.first) +
                              " Sequence = " + QString::number(idPair.second )+ "\n");
     }
+    appendSequenceWindow("\nAvailable Teaching Sequences: \n");
 }
 
 void RobotCmdGui::on_btnEndSequence_clicked()
@@ -220,9 +222,9 @@ void RobotCmdGui::on_btnEndSequence_clicked()
 
 void RobotCmdGui::on_btnAddPosition_clicked()
 {
-    if(seqeunceHandler->addPositionToTeach(currentRobotPosition))
+    if(seqeunceHandler->addPositionToTeach("MP " + currentRobotPosition))
     {
-        pendingPositionSequence.push_back(currentRobotPosition);
+        pendingSequence.push_back("MP " + currentRobotPosition);
         appendSequenceWindow("Added Position : " + currentRobotPosition + "\n");
     }
     else
@@ -236,7 +238,7 @@ void RobotCmdGui::on_btnStartSequence_clicked()
     if(seqeunceHandler->startNewTeachingSequence())
     {
         appendSequenceWindow("\nStarted new teaching sequence : \n");
-        pendingPositionSequence.clear();
+        pendingSequence.clear();
     }
     else
     {
@@ -249,7 +251,7 @@ void RobotCmdGui::on_btnAddCommand_clicked()
     QString command = robotUi->etCmdWindow->toPlainText();
     if(seqeunceHandler->addCommandToTeach(command))
     {
-        pendingPositionSequence.push_back(command);
+        pendingSequence.push_back(command);
         appendSequenceWindow("Added Command : \n" + command + "\n");
     }
     else
@@ -263,15 +265,15 @@ void RobotCmdGui::on_etJointAngle_textChanged()
     angleValue = robotUi->etJointAngle->toPlainText().toStdString().c_str();
 }
 
-void RobotCmdGui::on_rbErrorPolling_toggled(bool checked)
-{
-    pollForErrors = checked;
-}
-
-void RobotCmdGui::on_rbMonitorPosition_toggled(bool checked)
+void RobotCmdGui::on_ckMonitorPosition_toggled(bool checked)
 {
     if(commThread->isRunning())
     {
         commThread->StartTimer = checked;
     }
+}
+
+void RobotCmdGui::on_ckErrorPolling_toggled(bool checked)
+{
+   pollForErrors = checked;
 }

@@ -98,7 +98,6 @@ bool XmlConfHandler::getXmlFileOldContent(QVector<XmlTag> &tags,
 
     while (!xmlReader.atEnd())
     {
-        xmlReader.readNext();
         if(xmlReader.isStartElement())
         {
             currentTag.tagName = xmlReader.name().toString();
@@ -115,7 +114,7 @@ bool XmlConfHandler::getXmlFileOldContent(QVector<XmlTag> &tags,
         if(xmlReader.isCharacters() && newTag)
         {
            QString tagCharacters = xmlReader.text().toString();
-           QRegularExpression letters("\\l");
+           QRegularExpression letters("\\w");
            QRegularExpression digits("\\d");
            QRegularExpressionMatch hasLetters = letters.match(tagCharacters);
            QRegularExpressionMatch hasDigits = digits.match(tagCharacters);
@@ -140,6 +139,7 @@ bool XmlConfHandler::getXmlFileOldContent(QVector<XmlTag> &tags,
         {
            isTextElement = false;
         }
+        xmlReader.readNext();
     }
     if(!tags.empty())
     {

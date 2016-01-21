@@ -40,9 +40,8 @@ private slots:
 
     void on_etJointAngle_textChanged();
 
-    void on_rbErrorPolling_toggled(bool checked);
-
-    void on_rbMonitorPosition_toggled(bool checked);
+    void on_ckMonitorPosition_toggled(bool checked);
+    void on_ckErrorPolling_toggled(bool checked);
 
 public slots:
     void on_receivedData(const QByteArray &data);
@@ -56,7 +55,8 @@ private:
     SerialBoostHandler *bSerialHandler;
     XmlConfHandler *seqeunceHandler;
     QString currentRobotPosition;
-    QVector<QString> pendingPositionSequence;
+    QVector<QString> pendingSequence;
+
     QByteArray angleValue;
     bool pollForErrors;
 
@@ -67,7 +67,6 @@ private:
     bool sendData(const QByteArray &data);
 
     void extractPosition(const QString &posData);
-    void sendPositions();
 };
 
 #endif // ROBOTCMDGUI_H

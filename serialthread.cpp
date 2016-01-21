@@ -40,7 +40,7 @@ void SerialThread::run()
                    timer = QDateTime::currentMSecsSinceEpoch();
                }
             }
-            if(StartTimer)
+            if(StartTimer && !timerStarted)
             {
                 timer = QDateTime::currentMSecsSinceEpoch();
                 timerStarted = true;
