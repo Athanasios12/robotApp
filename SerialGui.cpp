@@ -2,6 +2,18 @@
 #include "ui_SerialGui.h"
 #include <QMutex>
 #include <QDebug>
+#include <QFile>
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
+
+const QString PORT_CONF_FILE = "Port_Conf.xml";
+const QString PORT_SETTINGS_TAG = "Port_Settings";
+const QString PORT_NAME_ATTR = "Port_Name";
+const QString BAUD_RATE_ATTR = "Baud_Rate";
+const QString DATA_BITS_ATTR = "Data_Bits";
+const QString STOP_BITS_ATTR = "Stop_Bits";
+const QString FLOW_CONTROL_ATTR = "Flow_Control";
+const QString PARITY_ATTR = "Parity";
 
 SerialGui::SerialGui(QWidget *parent,
                      SerialThread *commThread,
@@ -163,3 +175,102 @@ void SerialGui::on_receivedData(const QByteArray &data)
     qDebug() << data << "\n";
 }
 
+
+void SerialGui::on_btnSaveSettings_clicked()
+{
+    //save port configuration in separate file
+    QFile settingsFile(PORT_CONF_FILE);
+
+    if (settingsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QXmlStreamWriter xmlWriter(&settingsFile);
+        //here use xml reader and writer combo to append the file and create new session
+
+        xmlWriter.setAutoFormatting(true);
+
+        xmlWriter.writeStartDocument();
+        xmlWriter.writeStartElement(PORT_SETTINGS_TAG);//<Port_Settings>
+        xmlWriter.writeAttribute(PORT_NAME_ATTR, ui->cbPortComm->currentText());
+        xmlWriter.writeAttribute(BAUD_RATE_ATTR, ui->cbBaudRate->currentText());
+        xmlWriter.writeAttribute(DATA_BITS_ATTR, ui->cbDataBits->currentText());
+        xmlWriter.writeAttribute(STOP_BITS_ATTR, ui->cbStopBit->currentText());
+        xmlWriter.writeAttribute(FLOW_CONTROL_ATTR, ui->cbFlowControl->currentText());
+        xmlWriter.writeAttribute(PARITY_ATTR, ui->cbParityBit->currentText());
+        xmlWriter.writeEndElement();//</Port_Settings>
+        xmlWriter.writeEndDocument();
+
+        settingsFile.close();
+        appendDialogWindow("\nSaved Port Settings to " + PORT_CONF_FILE + "\n");
+    }
+}
+
+void SerialGui::on_btnLoadSettings_clicked()
+{
+    QFile settingsFile(PORT_CONF_FILE);
+
+    if (settingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        settingsFile.seek(0);
+        QXmlStreamReader xmlReader(&settingsFile);
+        while (!xmlReader.atEnd())
+        {
+            xmlReader.readNext();
+            if(xmlReader.isStartElement())
+            {
+                 if(xmlReader.name().toString() == PORT_SETTINGS_TAG)
+                 {
+                    if(!xmlReader.attributes().empty())
+                    {
+                        foreach(QXmlStreamAttribute attr, xmlReader.attributes())
+                        {
+                            if(attr.name() == PORT_NAME_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbPortComm, attr.value().toString());
+                            }
+                            else if(attr.name() == BAUD_RATE_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbBaudRate, attr.value().toString());
+                            }
+                            else if(attr.name() == FLOW_CONTROL_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbFlowControl, attr.value().toString());
+                            }
+                            else if(attr.name() == STOP_BITS_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbStopBit, attr.value().toString());
+                            }
+                            else if(attr.name() == PARITY_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbParityBit, attr.value().toString());
+                            }
+                            else if(attr.name() == DATA_BITS_ATTR)
+                            {
+                                setCurrentCbItem(ui->cbDataBits, attr.value().toString());
+                            }
+                        }
+                    }
+                 }
+            }
+        }
+        settingsFile.close();
+        appendDialogWindow("\nLoaded Port Settings from " + PORT_CONF_FILE + "\n");
+    }
+}
+
+bool SerialGui::setCurrentCbItem(QComboBox *comboBox, const QString &value)
+{
+    int index = comboBox->findData(value);
+    int index2 = comboBox->findText(value);
+    if ( index != -1 )
+    {
+       comboBox->setCurrentIndex(index);
+       return true;
+    }
+    else if(index2 != -1)
+    {
+        comboBox->setCurrentIndex(index2);
+        return true;
+    }
+
+    return false;
+}

@@ -5,6 +5,7 @@
 #include "SerialCommHandler.h"
 #include "serialthread.h"
 #include "SerialBoostHandler.h"
+#include "QComboBox"
 
 namespace Ui {
 class SerialGui;
@@ -24,6 +25,7 @@ private:
     void setCbOptions();
     bool startSerialComm();
     void removeAllItems();
+    bool setCurrentCbItem(QComboBox *comboBox, const QString &value);
 signals:
     void writeData(QByteArray);
 
@@ -36,6 +38,10 @@ private slots:
 
     void on_cbPortComm_currentIndexChanged(const QString &port);
 
+
+    void on_btnSaveSettings_clicked();
+
+    void on_btnLoadSettings_clicked();
 
 public slots:
     void on_receivedData(const QByteArray &data);

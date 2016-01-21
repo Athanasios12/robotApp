@@ -7,8 +7,9 @@
 
 //tags
 const QString SESSION_TAG = "Session";
-const QString POSITIONS_TAG = "Positions";
+const QString SEQUENCE_TAG = "Sequence";
 const QString POSITION_TAG = "Position";
+const QString COMMAND_TAG = "Command";
 
 //attribiutes
 const QString DATE_ATTR = "Date";
@@ -78,13 +79,12 @@ bool XmlConfHandler::writeXmlOldContent(const QVector<XmlTag> &tags,
             }
             lineNumber++;
         }
+        return true;
     }
     else
     {
         return false;
     }
-    m_stream->writeEndDocument();
-    return true;
 }
 
 bool XmlConfHandler::getXmlFileOldContent(QVector<XmlTag> &tags,
@@ -182,6 +182,7 @@ bool XmlConfHandler::endCurrentSession()
     {
         m_stream->writeEndElement();//</Session>
         writeXmlOldContent(oldContent, oldEndElements);
+        m_stream->writeEndDocument();
         m_filePtr->close();
         teachingSequenceID = 0;
         newSessionStarted = false;
@@ -192,9 +193,9 @@ bool XmlConfHandler::endCurrentSession()
 
 bool XmlConfHandler::startNewTeachingSequence()
 {
-    if(newSessionStarted)
+    if(newSessionStarted && !newSequenceStarted)
     {
-        m_stream->writeStartElement(POSITIONS_TAG);
+        m_stream->writeStartElement(SEQUENCE_TAG);
         m_stream->writeAttribute(SESSION_ID_ATTR, QString::number(currentSessionID));
         m_stream->writeAttribute(SEQUENCE_ID_ATTR, QString::number(teachingSequenceID));
         newSequenceStarted = true;
@@ -209,7 +210,7 @@ bool XmlConfHandler::startNewTeachingSequence()
 
 bool XmlConfHandler::endCurrentTeachingSequence()
 {
-    if(newSequenceStarted)
+    if(newSessionStarted && newSequenceStarted)
     {
         m_stream->writeEndElement(); // </positions>
         teachingSequenceID++;
@@ -232,7 +233,40 @@ bool XmlConfHandler::addPositionToTeach(const QString &position)
     }
 }
 
+bool XmlConfHandler::addCommandToTeach(const QString &command)
+{
+    if(newSequenceStarted)
+    {
+        m_stream->writeTextElement(COMMAND_TAG, command);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, QVector<QString> &positions)
+{
+    if(extractTagCharacters(sessionID, sequenceID, positions, POSITION_TAG))
+    {
+        return true;
+    }
+    return false;
+}
+
+bool XmlConfHandler::extractCommandList(quint64 sessionID, quint64 sequenceID, QVector<QString> &commands)
+{
+    if(extractTagCharacters(sessionID, sequenceID, commands, COMMAND_TAG))
+    {
+        return true;
+    }
+    return false;
+}
+
+
+bool XmlConfHandler::extractTagCharacters(quint64 sessionID, quint64 sequenceID,
+                                          QVector<QString> &tagValues, const QString &tagName)
 {
     if(!newSessionStarted)
     {
@@ -248,7 +282,7 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
     {
         if(!findLineNumber(lineNumber, oldEndElements))
         {
-            if(oldContent[i].tagName == POSITIONS_TAG && !oldContent[i].attribiutes.empty())
+            if(oldContent[i].tagName == SEQUENCE_TAG && !oldContent[i].attribiutes.empty())
             {
                 if(oldContent[i].attribiutes[0].value().toULongLong() == sessionID)
                 {
@@ -256,9 +290,9 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
                     {
                         while(!findLineNumber(lineNumber, oldEndElements))
                         {
-                            if(oldContent[i].tagName == POSITION_TAG && !oldContent[i].tagCharacters.isEmpty())
+                            if(oldContent[i].tagName == tagName && !oldContent[i].tagCharacters.isEmpty())
                             {
-                                positions.push_back(oldContent[i].tagCharacters);
+                                tagValues.push_back(oldContent[i].tagCharacters);
                             }
                             i++;
                             lineNumber++;
@@ -270,8 +304,7 @@ bool XmlConfHandler::extractPositionList(quint64 sessionID, quint64 sequenceID, 
         }
         lineNumber++;
     }
-    return positions.empty();
-
+    return tagValues.empty();
 }
 
 bool XmlConfHandler::getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &IDsTab)

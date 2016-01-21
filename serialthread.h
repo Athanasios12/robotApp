@@ -22,6 +22,7 @@ private:
     bool dataSend;
 public:
     bool Stop;
+    bool StartTimer;
 };
 
 #endif // SERIALTHREAD_H

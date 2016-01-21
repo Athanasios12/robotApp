@@ -18,9 +18,11 @@ public:
 
     bool startNewTeachingSequence();
     bool addPositionToTeach(const QString &position);
+    bool addCommandToTeach(const QString &command);
     bool endCurrentTeachingSequence();
 
     bool extractPositionList(quint64 sessionID, quint64 sequenceID, QVector<QString> &positions);
+    bool extractCommandList(quint64 sessionID, quint64 sequenceID, QVector<QString> &commands);
     bool getSessionSequenceIDs(QVector<QPair<quint64, quint64> > &IDsTab);
 
     struct XmlTag
@@ -29,6 +31,7 @@ public:
         QString tagCharacters;
         QXmlStreamAttributes attribiutes;
     };
+
 private:
     QString m_fileName;
     QScopedPointer<QFile> m_filePtr;
@@ -47,6 +50,11 @@ private:
     bool getXmlFileOldContent(QVector<XmlTag> &tags,
                               QVector<quint64> &endElementsNumbers);
     bool findLineNumber(quint64 num, const QVector<quint64> &lineNumbers);
+
+    bool extractTagCharacters(quint64 sessionID,
+                              quint64 sequenceID,
+                              QVector<QString> &tagValues,
+                              const QString &tagName);
 };
 
 

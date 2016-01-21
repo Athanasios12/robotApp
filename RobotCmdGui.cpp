@@ -7,7 +7,9 @@ const QString SEQUENCE_FILE_NAME = "Robot_Conf.xml";
 RobotCmdGui::RobotCmdGui(QWidget *parent) :
     QMainWindow(parent),
     robotUi(new Ui::RobotCmdGui),
-    bSerialHandler(new SerialBoostHandler())
+    bSerialHandler(new SerialBoostHandler()),
+    angleValue("1"),
+    pollForErrors(false)
 {
     robotUi->setupUi(this);
     commThread = new SerialThread(this, bSerialHandler);
@@ -43,8 +45,13 @@ bool RobotCmdGui::sendData(const QByteArray &data)
     else
     {
         QDateTime now = QDateTime::currentDateTime();
-        appendHistoryWindow(now.toString()+": " + data + "\n");
-        emit writeData(data);
+        QByteArray totalData = data;
+        if(pollForErrors)
+        {
+            totalData += "\nER";
+        }
+        appendHistoryWindow(now.toString()+": " + totalData + "\n");
+        emit writeData(totalData);
     }
     return true;
 }
@@ -96,7 +103,6 @@ void RobotCmdGui::extractPosition(const QString &posData)
             }
             pos += positionValue.size();
             ++counter;
-
         }
     }
 }
@@ -119,51 +125,48 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
 
 void RobotCmdGui::appendHistoryWindow(const QString &text)
 {
-    robotUi->txCmdHistory->setPlainText(robotUi->txCmdHistory->toPlainText() +
-                                     text);
+    robotUi->txCmdHistory->setPlainText(text + robotUi->txCmdHistory->toPlainText());
 }
 
 void RobotCmdGui::appendRobotResponseWindow(const QString &text)
 {
-    robotUi->txRobotResponse->setPlainText(robotUi->txRobotResponse->toPlainText() +
-                                     text);
+    robotUi->txRobotResponse->setPlainText(text + robotUi->txRobotResponse->toPlainText());
 }
 
 void RobotCmdGui::appendSequenceWindow(const QString &text)
 {
-    robotUi->txSequenceWindow->setPlainText(robotUi->txSequenceWindow->toPlainText() +
-                                     text);
+    robotUi->txSequenceWindow->setPlainText(text + robotUi->txSequenceWindow->toPlainText());
 }
 
 
 void RobotCmdGui::on_btnAxis1_clicked()
 {
-    sendData("MJ 1,0,0,0,0,0");
+    sendData("MJ " + angleValue + ",0,0,0,0,0");
 }
 
 void RobotCmdGui::on_btnAxis2_clicked()
 {
-    sendData("MJ 0,1,0,0,0,0");
+    sendData("MJ 0," + angleValue + ",0,0,0,0");
 }
 
 void RobotCmdGui::on_btnAxis3_clicked()
 {
-    sendData("MJ 0,0,1,0,0,0");
+    sendData("MJ 0,0," + angleValue + ",0,0,0");
 }
 
 void RobotCmdGui::on_btnAxis4_clicked()
 {
-    sendData("MJ 0,0,0,1,0,0");
+    sendData("MJ 0,0,0," + angleValue + ",0,0");
 }
 
 void RobotCmdGui::on_btnAxis5_clicked()
 {
-    sendData("MJ 0,0,0,0,1,0");
+    sendData("MJ 0,0,0,0," + angleValue + ",0");
 }
 
 void RobotCmdGui::on_btnAxis6_clicked()
 {
-    sendData("MJ 0,0,0,0,0,1");
+    sendData("MJ 0,0,0,0,0," + angleValue);
 }
 
 void RobotCmdGui::sendPositions()
@@ -217,12 +220,58 @@ void RobotCmdGui::on_btnEndSequence_clicked()
 
 void RobotCmdGui::on_btnAddPosition_clicked()
 {
-    seqeunceHandler->addPositionToTeach(currentRobotPosition);
-    pendingPositionSequence.push_back(currentRobotPosition);
+    if(seqeunceHandler->addPositionToTeach(currentRobotPosition))
+    {
+        pendingPositionSequence.push_back(currentRobotPosition);
+        appendSequenceWindow("Added Position : " + currentRobotPosition + "\n");
+    }
+    else
+    {
+       appendSequenceWindow("\nStart new teaching sequence to add positions!\n");
+    }
 }
 
 void RobotCmdGui::on_btnStartSequence_clicked()
 {
-    seqeunceHandler->startNewTeachingSequence();
-    pendingPositionSequence.clear();
+    if(seqeunceHandler->startNewTeachingSequence())
+    {
+        appendSequenceWindow("\nStarted new teaching sequence : \n");
+        pendingPositionSequence.clear();
+    }
+    else
+    {
+        appendSequenceWindow("\nFinish started teaching sequence!\n");
+    }
+}
+
+void RobotCmdGui::on_btnAddCommand_clicked()
+{
+    QString command = robotUi->etCmdWindow->toPlainText();
+    if(seqeunceHandler->addCommandToTeach(command))
+    {
+        pendingPositionSequence.push_back(command);
+        appendSequenceWindow("Added Command : \n" + command + "\n");
+    }
+    else
+    {
+       appendSequenceWindow("\nStart new teaching sequence to add commands!\n");
+    }
+}
+
+void RobotCmdGui::on_etJointAngle_textChanged()
+{
+    angleValue = robotUi->etJointAngle->toPlainText().toStdString().c_str();
+}
+
+void RobotCmdGui::on_rbErrorPolling_toggled(bool checked)
+{
+    pollForErrors = checked;
+}
+
+void RobotCmdGui::on_rbMonitorPosition_toggled(bool checked)
+{
+    if(commThread->isRunning())
+    {
+        commThread->StartTimer = checked;
+    }
 }

@@ -36,6 +36,13 @@ private slots:
     void on_btnEndSequence_clicked();
     void on_btnAddPosition_clicked();
     void on_btnStartSequence_clicked();
+    void on_btnAddCommand_clicked();
+
+    void on_etJointAngle_textChanged();
+
+    void on_rbErrorPolling_toggled(bool checked);
+
+    void on_rbMonitorPosition_toggled(bool checked);
 
 public slots:
     void on_receivedData(const QByteArray &data);
@@ -50,6 +57,8 @@ private:
     XmlConfHandler *seqeunceHandler;
     QString currentRobotPosition;
     QVector<QString> pendingPositionSequence;
+    QByteArray angleValue;
+    bool pollForErrors;
 
     void appendHistoryWindow(const QString &text);
     void appendRobotResponseWindow(const QString &text);
