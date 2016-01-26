@@ -23,6 +23,7 @@ private:
 public:
     bool Stop;
     bool StartTimer;
+    bool PollForErrors;
 };
 
 #endif // SERIALTHREAD_H

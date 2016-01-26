@@ -45,13 +45,35 @@ bool RobotCmdGui::sendData(const QByteArray &data)
     else
     {
         QDateTime now = QDateTime::currentDateTime();
-        QByteArray totalData = data;
-        if(pollForErrors)
+        QString Data(data);
+        int index = Data.indexOf("\n");
+        int start = 0;
+        if(index != -1)
         {
-            totalData += "\nER";
+            QStringRef commandLine;
+            QByteArray totalMsg;
+            while(index != -1)
+            {
+                commandLine = QStringRef(&Data, start, (index - start));
+                start = index + 1;
+                index = Data.indexOf("\n", index + 1);
+                QByteArray temp(commandLine.toString().toStdString().c_str());
+                temp += 13;// ACII /r
+                temp += 10;// ASCII /n
+                totalMsg += temp;
+            }
+            if(Data.size() > start)
+            {
+                commandLine = QStringRef(&Data, start, (Data.size() - start));
+                totalMsg += commandLine.toString().toStdString().c_str();
+            }
+            emit writeData(totalMsg);
         }
-        appendHistoryWindow(now.toString()+": " + totalData + "\n");
-        emit writeData(totalData);
+        else
+        {
+            emit writeData(data);
+        }
+        appendHistoryWindow(now.toString()+": " + data + "\n");
     }
     return true;
 }
@@ -111,8 +133,8 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
 {
     appendRobotResponseWindow(data.toStdString().c_str());
     //check if received new position - in future check if received error message
-    QRegularExpression regexPositionOpen("\\D\\d.*O");
-    QRegularExpression regexPositionClosed("\\D\\d.*C");
+    QRegularExpression regexPositionOpen("\\D\\d.*N");
+    QRegularExpression regexPositionClosed("\\D\\d.*N");
     QRegularExpressionMatch match1 = regexPositionOpen.match(data);
     QRegularExpressionMatch match2 = regexPositionClosed.match(data);
     if (match1.hasMatch())
@@ -132,12 +154,12 @@ void RobotCmdGui::on_receivedData(const QByteArray &data)
 
 void RobotCmdGui::appendHistoryWindow(const QString &text)
 {
-    robotUi->txCmdHistory->setPlainText(text + robotUi->txCmdHistory->toPlainText());
+    robotUi->txCmdHistory->setPlainText(robotUi->txCmdHistory->toPlainText() + text);
 }
 
 void RobotCmdGui::appendRobotResponseWindow(const QString &text)
 {
-    robotUi->txRobotResponse->setPlainText(text + robotUi->txRobotResponse->toPlainText());
+    robotUi->txRobotResponse->setPlainText(robotUi->txRobotResponse->toPlainText() + "\n" + text);
 }
 
 void RobotCmdGui::appendSequenceWindow(const QString &text)
@@ -180,7 +202,7 @@ void RobotCmdGui::on_btnExecuteSequence_clicked()
 {
     if(!pendingSequence.empty())
     {
-        QString positionCode;
+        QByteArray positionCode;
         foreach(QString command, pendingSequence)
         {
             positionCode += command + "\n";
@@ -275,5 +297,5 @@ void RobotCmdGui::on_ckMonitorPosition_toggled(bool checked)
 
 void RobotCmdGui::on_ckErrorPolling_toggled(bool checked)
 {
-   pollForErrors = checked;
+   commThread->PollForErrors = checked;
 }

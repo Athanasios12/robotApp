@@ -7,7 +7,8 @@ SerialThread::SerialThread(QObject *parent, SerialBoostHandler *serial):
     bSerialHandler(serial),
     dataSend(false),
     Stop(false),
-    StartTimer(false)
+    StartTimer(false),
+    PollForErrors(false)
 {
 
 }
@@ -29,13 +30,12 @@ void SerialThread::run()
             {
                 timerStarted = false;
             }
-
             if(timerStarted)
             {
                if((QDateTime::currentMSecsSinceEpoch() - timer) >= 2500)
                {
                    QByteArray posRequest("WH");
-                   posRequest += 13;
+                   posRequest += 0x0D;
                    bSerialHandler->write(posRequest.constData(), posRequest.count());
                    timer = QDateTime::currentMSecsSinceEpoch();
                }
@@ -49,8 +49,14 @@ void SerialThread::run()
             if(dataSend)
             {
                 dataSend = false;
-                m_data += 13;
+                m_data += 0x0D;
                 bSerialHandler->write(m_data.constData(), m_data.count());
+                if(PollForErrors)
+                {
+                   QByteArray error("ER");
+                   error += 0x0D;
+                   bSerialHandler->write(error.constData(), error.count());
+                }
             }
             std::string rData;
             totalData.clear();
